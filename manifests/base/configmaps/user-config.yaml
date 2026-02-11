@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+  namespace: sock-shop
+  labels:
+    app: user
+data:
+  MONGO_HOST: "user-db"
+  MONGO_PORT: "27017"
+  DATABASE: "users"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carts-config
+  namespace: sock-shop
+  labels:
+    app: carts
+data:
+  MONGO_HOST: "carts-db"
+  MONGO_PORT: "27017"
+  SPRING_DATA_MONGODB_HOST: "carts-db"
+  SPRING_DATA_MONGODB_PORT: "27017"

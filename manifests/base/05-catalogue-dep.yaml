@@ -20,6 +20,11 @@ spec:
         - name: catalogue
           image: quay.io/powercloud/sock-shop-catalogue:latest
           imagePullPolicy: IfNotPresent
+          
+          envFrom:
+          - configMapRef:
+              name: catalogue-config
+
           command: [ "/opt/app" ]
           args:
             - -port=8080
