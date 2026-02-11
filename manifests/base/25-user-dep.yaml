@@ -38,8 +38,6 @@ spec:
               value: user
             - name: USER_DATABASE
               value: mongodb
-          securityContext:
-            runAsNonRoot: true
           livenessProbe:
             httpGet:
               path: /health
@@ -52,5 +50,5 @@ spec:
               port: 8080
             initialDelaySeconds: 180
             periodSeconds: 3
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""

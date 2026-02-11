@@ -22,8 +22,6 @@ spec:
           ports:
             - name: mongo
               containerPort: 27017
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /tmp
               name: users-db-temp-vol
@@ -36,6 +34,6 @@ spec:
         - name: users-db-temp-vol
           persistentVolumeClaim:
             claimName: user-db-temp-pvc
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
-        kubernetes.io/arch: amd64
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""
+      #  kubernetes.io/arch: amd64

@@ -36,17 +36,10 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: catalogue-data
-          securityContext:
-            privileged: false
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              drop:
-                - ALL
       volumes:
         - name: catalogue-data
           emptyDir:
             medium: Memory
-      nodeSelector:
-        kubernetes.io/arch: amd64
-        node-role.kubernetes.io/worker: ""
+      #nodeSelector:
+      #  kubernetes.io/arch: amd64
+      #  node-role.kubernetes.io/worker: ""

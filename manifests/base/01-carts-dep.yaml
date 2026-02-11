@@ -30,12 +30,6 @@ spec:
               memory: 200Mi
           ports:
             - containerPort: 8080
-          securityContext:
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - all
-            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /tmp
               name: carts-vol
@@ -43,5 +37,6 @@ spec:
         - name: carts-vol
           emptyDir:
             medium: Memory
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""
+      #na7ina security context for now

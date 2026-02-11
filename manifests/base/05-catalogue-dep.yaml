@@ -33,12 +33,6 @@ spec:
               memory: 100Mi
           ports:
             - containerPort: 8080
-          securityContext:
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - all
-            readOnlyRootFilesystem: true
           livenessProbe:
             httpGet:
               path: /health
@@ -51,5 +45,6 @@ spec:
               port: 8080
             initialDelaySeconds: 180
             periodSeconds: 3
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""
+      #na7ina security context for now
