@@ -29,9 +29,12 @@ spec:
               memory: 300Mi
           ports:
             - containerPort: 8079
-          env:
-            - name: SESSION_REDIS
-              value: "true"
+
+          # use configmap 
+          envFrom:
+            - configMapRef:
+                name: frontend-config
+
           securityContext:
             runAsNonRoot: true
             capabilities:

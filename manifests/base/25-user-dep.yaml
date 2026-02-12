@@ -20,11 +20,6 @@ spec:
         - name: user
           image: quay.io/powercloud/sock-shop-user:latest
           imagePullPolicy: IfNotPresent
-
-          envFrom:
-          - configMapRef:
-              name: user-config
-
           resources:
             limits:
               cpu: 300m
@@ -36,13 +31,25 @@ spec:
             - containerPort: 8080
           command: [ "/opt/user" ]
           args: [ "-port=8080" , "-mongo-host=user-db:27017" ]
+
+          # Use configmap for env vars instead of hardcoding them in the deployment
           env:
-            - name: mongo
-              value: user-db:27017
-            - name: HATEAOS
-              value: user
-            - name: USER_DATABASE
-              value: mongodb
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: user-config
+                  key: MONGO_HOST
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: user-config
+                  key: MONGO_PORT
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: user-config
+                  key: MONGO_DBASE
+
           securityContext:
             runAsNonRoot: true
           livenessProbe:

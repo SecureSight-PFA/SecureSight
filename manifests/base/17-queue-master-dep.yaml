@@ -22,9 +22,12 @@ spec:
           imagePullPolicy: IfNotPresent
           command: [ "/usr/bin/java" ]
           args: [ "-cp", "/opt/app.jar", "-Dloader.path=/opt/lib", "org.springframework.boot.loader.PropertiesLauncher", "--port=8080" ]
-          env:
-            - name: JAVA_OPTS
-              value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+          
+          # use configmap
+          envFrom:
+            - configMapRef:
+                name: queue-master-config
+
           resources:
             limits:
               cpu: 300m
