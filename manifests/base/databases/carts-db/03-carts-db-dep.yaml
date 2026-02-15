@@ -22,6 +22,11 @@ spec:
           ports:
             - name: mongo
               containerPort: 27017
+              
+          envFrom:
+            - secretRef:
+                name: carts-db-secret
+          
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

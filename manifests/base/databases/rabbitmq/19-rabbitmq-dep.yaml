@@ -29,6 +29,11 @@ spec:
               name: management
             - containerPort: 5672
               name: rabbitmq
+        
+          envFrom:
+          - secretRef:
+              name: carts-db-secret
+              
           securityContext:
             readOnlyRootFilesystem: false
         - name: rabbitmq-exporter
