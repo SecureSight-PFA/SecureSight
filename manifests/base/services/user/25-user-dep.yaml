@@ -30,7 +30,11 @@ spec:
           ports:
             - containerPort: 8080
           command: [ "/opt/user" ]
-          args: [ "-port=8080" , "-database=mongodb","-mongo-host=user-db:27017" ]
+          args: [ "-port=8080" ,"-database=$(MONGO_DATABASE)", "-mongo-host=user-db:27017"]
+
+          envFrom:
+            - secretRef:
+                name: user-db-secret
 
           # Use configmap for env vars instead of hardcoding them in the deployment
           env:
@@ -44,11 +48,12 @@ spec:
                 configMapKeyRef:
                   name: user-config
                   key: MONGO_PORT
-            - name: MONGO_DB
+            - name: MONGO_DATABASE
               valueFrom:
                 configMapKeyRef:
                   name: user-config
-                  key: MONGO_DB
+                  key: MONGO_DATABASE
+
 
           #securityContext:
             #runAsNonRoot: true
