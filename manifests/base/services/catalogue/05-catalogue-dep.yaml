@@ -22,13 +22,17 @@ spec:
           imagePullPolicy: IfNotPresent
           
           envFrom:
-          - configMapRef:
-              name: catalogue-config
+            - configMapRef:
+                name: catalogue-config
+            - secretRef:
+                name: catalogue-db-secret
+
 
           command: [ "/opt/app" ]
           args:
             - -port=8080
-            - -DSN=root:admin@tcp(catalogue-db:3306)/socksdb
+            #- -DSN=root:admin@tcp(catalogue-db:3306)/socksdb
+            - -DSN=$(MARIADB_USER):$(MARIADB_PASSWORD)@tcp(catalogue-db:3306)/$(MARIADB_DATABASE)
           resources:
             limits:
               cpu: 200m

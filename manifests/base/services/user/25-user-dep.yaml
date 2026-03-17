@@ -30,7 +30,7 @@ spec:
           ports:
             - containerPort: 8080
           command: [ "/opt/user" ]
-          args: [ "-port=8080" ,"-database=$(MONGO_DATABASE)", "-mongo-host=user-db:27017"]
+          args: [ "-port=8080" ,"-database=$(MONGO_DATABASE)", "-mongo-host=$(MONGO_HOST):$(MONGO_PORT)"]
 
           envFrom:
             - secretRef:
