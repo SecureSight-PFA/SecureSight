@@ -22,6 +22,13 @@ spec:
           ports:
             - name: mongo
               containerPort: 27017
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
