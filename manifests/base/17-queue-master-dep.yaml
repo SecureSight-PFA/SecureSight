@@ -34,5 +34,5 @@ spec:
               memory: 300Mi
           ports:
             - containerPort: 8080
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""

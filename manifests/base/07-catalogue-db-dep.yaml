@@ -20,22 +20,20 @@ spec:
         - name: catalogue-db
           image: quay.io/powercloud/sock-shop-catalogue-db:latest
           imagePullPolicy: IfNotPresent
-          env:
-            - name: MARIADB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-creds
-                  key: password
-            - name: MARIADB_USER
-              value: root
-            - name: MARIADB_DATABASE
-              value: socksdb
           ports:
             - name: mysql
               containerPort: 3306
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: catalogue-data
+          env:
+          - name: MARIADB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: MYSQL_ROOT_PASSWORD  
+                name: mongodb-creds
+          - name: MARIADB_DATABASE
+            value: "socksdb"
       volumes:
         - name: catalogue-data
           emptyDir:

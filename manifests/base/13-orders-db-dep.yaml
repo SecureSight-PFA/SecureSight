@@ -36,6 +36,6 @@ spec:
         - name: orders-db-temp-vol
           persistentVolumeClaim:
             claimName: orders-db-temp-pvc
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
-        kubernetes.io/arch: amd64
+      #nodeSelector:
+      #  node-role.kubernetes.io/worker: ""
+      #  kubernetes.io/arch: amd64
