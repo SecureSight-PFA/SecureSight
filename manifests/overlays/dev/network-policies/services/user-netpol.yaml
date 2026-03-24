@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: user-netpol
+  namespace: sock-shop
+  labels:
+    app: user
+    policy: application
+    tier: backend
+spec:
+  podSelector:
+    matchLabels:
+      name: user
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: front-end
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  egress:
+  
+  - to:
+    - podSelector:
+        matchLabels:
+          name: user-db
+    ports:
+    - protocol: TCP
+      port: 27017  # mongo port

@@ -22,3 +22,5 @@ resources:
   - ./hpa/payment-hpa.yaml
   - ./hpa/shipping-hpa.yaml
   - ./hpa/queue-master-hpa.yaml
+
+  - ./network-policies/

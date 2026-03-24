@@ -1,0 +1,27 @@
+---
+# Block all incoming traffic by default
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: sock-shop
+  labels:
+    policy: security
+spec:
+  podSelector: {}  
+  policyTypes:
+  - Ingress
+
+---
+# Block all outgoing traffic by default
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: sock-shop
+  labels:
+    policy: security
+spec:
+  podSelector: {}  
+  policyTypes:
+  - Egress

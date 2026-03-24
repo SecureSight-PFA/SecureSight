@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rabbitmq-netpol
+  namespace: sock-shop
+  labels:
+    app: rabbitmq
+    policy: infrastructure
+    tier: messaging
+spec:
+  podSelector:
+    matchLabels:
+      name: rabbitmq
+  
+  policyTypes:
+  - Ingress
+  
+  ingress:
+  # allow from orders service
+  - from:
+    - podSelector:
+        matchLabels:
+          name: orders
+    ports:
+    - protocol: TCP
+      port: 5672  # AMQP
+    - protocol: TCP
+      port: 15672  # management UI
+  
+  # allow from shipping service
+  - from:
+    - podSelector:
+        matchLabels:
+          name: shipping
+    ports:
+    - protocol: TCP
+      port: 5672
+  
+  # allow from queue-master service
+  - from:
+    - podSelector:
+        matchLabels:
+          name: queue-master
+    ports:
+    - protocol: TCP
+      port: 5672
+  

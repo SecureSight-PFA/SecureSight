@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-netpol
+  namespace: sock-shop
+  labels:
+    app: frontend
+    policy: application
+spec:
+  podSelector:
+    matchLabels:
+      name: front-end
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  - {}  # allow all incoming (external + internal)
+  
+  egress:
+  # Allow frontend -> catalogue
+  - to:
+    - podSelector:
+        matchLabels:
+          name: catalogue
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # Allow frontend -> user
+  - to:
+    - podSelector:
+        matchLabels:
+          name: user
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # Allow frontend -> carts
+  - to:
+    - podSelector:
+        matchLabels:
+          name: carts
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # frontend -> orders
+  - to:
+    - podSelector:
+        matchLabels:
+          name: orders
+    ports:
+    - protocol: TCP
+      port: 80

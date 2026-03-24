@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orders-db-netpol
+  namespace: sock-shop
+  labels:
+    app: orders-db
+    policy: database
+    tier: data
+spec:
+  podSelector:
+    matchLabels:
+      name: orders-db
+  
+  policyTypes:
+  - Ingress
+  
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: orders
+    ports:
+    - protocol: TCP
+      port: 27017
+  

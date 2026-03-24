@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: catalogue-netpol
+  namespace: sock-shop
+  labels:
+    app: catalogue
+    policy: application
+spec:
+  podSelector:
+    matchLabels:
+      name: catalogue
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow frontend -> catalogue
+  - from:
+    - podSelector:
+        matchLabels:
+          name: front-end
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  egress:
+  # Allow catalogue -> catalogue-db
+  - to:
+    - podSelector:
+        matchLabels:
+          name: catalogue-db
+    ports:
+    - protocol: TCP
+      port: 3306 # mysql port

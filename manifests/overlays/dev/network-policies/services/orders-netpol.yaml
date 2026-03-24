@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orders-netpol
+  namespace: sock-shop
+  labels:
+    app: orders
+    policy: application
+    tier: backend
+spec:
+  podSelector:
+    matchLabels:
+      name: orders
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # only allow from frontend
+  - from:
+    - podSelector:
+        matchLabels:
+          name: front-end
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  egress:
+  
+  # allow to orders-db
+  - to:
+    - podSelector:
+        matchLabels:
+          name: orders-db
+    ports:
+    - protocol: TCP
+      port: 27017  
+  
+  # allow to shipping service
+  - to:
+    - podSelector:
+        matchLabels:
+          name: shipping
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # allow to payment service
+  - to:
+    - podSelector:
+        matchLabels:
+          name: payment
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # allow to RabbitMQ
+  - to:
+    - podSelector:
+        matchLabels:
+          name: rabbitmq
+    ports:
+    - protocol: TCP
+      port: 5672  # AMQP port
