@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: sock-shop
+  namespace: sock-shop
+
+resources:
+  - ../../base
+
+  - ./databases/carts-db/
+  - ./databases/catalogue-db/
+  - ./databases/orders-db/
+  - ./databases/rabbitmq/
+  - ./databases/session-db/
+  - ./databases/user-db/
+
+  - ./hpa/frontend-hpa.yaml
+  - ./hpa/catalogue-hpa.yaml
+  - ./hpa/user-hpa.yaml
+  - ./hpa/carts-hpa.yaml
+  - ./hpa/orders-hpa.yaml
+  - ./hpa/payment-hpa.yaml
+  - ./hpa/shipping-hpa.yaml
+  - ./hpa/queue-master-hpa.yaml
