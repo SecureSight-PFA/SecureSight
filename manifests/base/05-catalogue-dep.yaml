@@ -16,6 +16,18 @@ spec:
       labels:
         name: catalogue
     spec:
+      initContainers:
+      - name: wait-for-catalogue-db
+        image: busybox:1.28
+        command: 
+        - sh
+        - -c
+        - |
+          echo "Waiting for catalogue-db to be ready..."
+          until nc -z catalogue-db 3306; do
+            sleep 2
+          done
+          echo "catalogue-db is ready!"
       containers:
         - name: catalogue
           image: quay.io/powercloud/sock-shop-catalogue:latest
@@ -43,7 +55,7 @@ spec:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 180
+            initialDelaySeconds: 30
             periodSeconds: 3
       #nodeSelector:
       #  node-role.kubernetes.io/worker: ""
