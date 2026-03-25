@@ -44,6 +44,13 @@ resources:
   - 27-user-db-dep.yaml
   - 28-user-db-svc.yaml
   - 29-ingress.yaml
+  - 30-frontend-hpa.yaml
+  - 31-carts-hpa.yaml
+  - 32-catalogue-hpa.yaml
+  - 33-orders-hpa.yaml
+  - 34-payment-hpa.yaml
+  - 35-shipping-hpa.yaml
+  - 36-user-hpa.yaml
 secretGenerator:
   - name: mongodb-creds
     namespace: sock-shop
