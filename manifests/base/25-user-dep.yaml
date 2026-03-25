@@ -42,13 +42,13 @@ spec:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 300
+            initialDelaySeconds: 30
             periodSeconds: 15
           readinessProbe:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 180
+            initialDelaySeconds: 30
             periodSeconds: 3
       #nodeSelector:
       #  node-role.kubernetes.io/worker: ""

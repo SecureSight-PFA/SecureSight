@@ -1,0 +1,56 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-catalogue
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: catalogue
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: front-end
+    ports:
+    - port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-catalogue-to-db
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: catalogue
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: catalogue-db
+    ports:
+    - port: 3306
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-catalogue-db-ingress
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: catalogue-db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: catalogue
+    ports:
+    - port: 3306

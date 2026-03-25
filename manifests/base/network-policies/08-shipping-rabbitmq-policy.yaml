@@ -1,0 +1,68 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-shipping-to-rabbitmq
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: shipping
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: rabbitmq
+    ports:
+    - port: 5672
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-rabbitmq-ingress
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: rabbitmq
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: orders
+    ports:
+    - port: 5672
+  - from:
+    - podSelector:
+        matchLabels:
+          name: shipping
+    ports:
+    - port: 5672
+  - from:
+    - podSelector:
+        matchLabels:
+          name: queue-master
+    ports:
+    - port: 5672
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-queue-master-to-rabbitmq
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: queue-master
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: rabbitmq
+    ports:
+    - port: 5672

@@ -44,13 +44,27 @@ resources:
   - 27-user-db-dep.yaml
   - 28-user-db-svc.yaml
   - 29-ingress.yaml
-  - 30-frontend-hpa.yaml
-  - 31-carts-hpa.yaml
-  - 32-catalogue-hpa.yaml
-  - 33-orders-hpa.yaml
-  - 34-payment-hpa.yaml
-  - 35-shipping-hpa.yaml
-  - 36-user-hpa.yaml
+
+  - hpa/frontend-hpa.yaml
+  - hpa/carts-hpa.yaml
+  - hpa/catalogue-hpa.yaml
+  - hpa/orders-hpa.yaml
+  - hpa/payment-hpa.yaml
+  - hpa/shipping-hpa.yaml
+  - hpa/user-hpa.yaml
+
+  - network-policies/00-default-deny.yaml
+  - network-policies/01-allow-dns.yaml
+  - network-policies/02-frontend-policy.yaml
+  - network-policies/03-catalogue-policy.yaml
+  - network-policies/04-carts-policy.yaml
+  - network-policies/05-orders-policy.yaml
+  - network-policies/06-payment-policy.yaml
+  - network-policies/07-user-policy.yaml
+  - network-policies/08-shipping-rabbitmq-policy.yaml
+  - network-policies/09-session-policy.yaml
+
+
 secretGenerator:
   - name: mongodb-creds
     namespace: sock-shop

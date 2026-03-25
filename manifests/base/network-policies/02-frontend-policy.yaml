@@ -1,0 +1,73 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-frontend
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: front-end
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - port: 8079
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-egress
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: front-end
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: catalogue
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: carts
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: orders
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: user
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: payment
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: shipping
+    ports:
+    - port: 8080
+  - to:
+    - podSelector:
+        matchLabels:
+          name: session-db
+    ports:
+    - port: 6379
