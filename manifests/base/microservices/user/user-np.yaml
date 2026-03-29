@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: user-access
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: user
+      policyTypes:
+        - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: front-end
+        - podSelector:
+            matchLabels:
+              name: orders
+      ports:
+        - protocol: TCP
+          port: 8080

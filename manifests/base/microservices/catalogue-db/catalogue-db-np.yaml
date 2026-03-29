@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: catalogue-db-access
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: catalogue-db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: catalogue
+      ports:
+        - protocol: TCP
+          port: 3306  

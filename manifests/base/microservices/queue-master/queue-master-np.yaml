@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: queue-master-access
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: queue-master
+      policyTypes:
+        - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: shipping
+        - podSelector:
+            matchLabels:
+              name: orders
+        - podSelector:
+            matchLabels:
+              name: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 8080

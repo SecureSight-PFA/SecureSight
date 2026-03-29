@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: session-db-access
+  namespace: sock-shop
+spec:
+  podSelector:
+    matchLabels:
+      name: session-db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: front-end     
+      ports:
+        - protocol: TCP
+          port: 6379

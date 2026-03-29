@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-db
+  namespace: sock-shop
+  labels:
+    name: user-db
+spec:
+  serviceName: "user-db"  
+  replicas: 1
+  selector:
+    matchLabels:
+      name: user-db
+  template:
+    metadata:
+      labels:
+        name: user-db
+    spec:
+      containers:
+        - name: user-db
+          image: quay.io/powercloud/sock-shop-user-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mongo
+              containerPort: 27017
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: users-db-vol
+              mountPath: /data/db-users
+            - name: users-db-temp-vol
+              mountPath: /tmp
+  volumeClaimTemplates:
+    - metadata:
+        name: users-db-vol
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi  
+    - metadata:
+        name: users-db-temp-vol
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi   

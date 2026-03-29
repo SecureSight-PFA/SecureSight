@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: catalogue-db
+  namespace: sock-shop
+  labels:
+    name: catalogue-db
+spec:
+  serviceName: "catalogue-db"  
+  replicas: 2
+  selector:
+    matchLabels:
+      name: catalogue-db
+  template:
+    metadata:
+      labels:
+        name: catalogue-db
+    spec:
+      containers:
+        - name: catalogue-db
+          image: quay.io/powercloud/sock-shop-catalogue-db:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-creds
+                  key: password
+            - name: MARIADB_USER
+              value: root
+            - name: MARIADB_DATABASE
+              value: socksdb
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - name: catalogue-data
+              mountPath: /var/lib/mysql
+          securityContext:
+            privileged: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+  volumeClaimTemplates:      
+    - metadata:
+        name: catalogue-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi   
