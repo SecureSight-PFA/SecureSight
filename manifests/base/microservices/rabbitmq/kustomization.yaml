@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: security
-
 resources:
-  - tetragon/
+  - rabbitmq-statefulset.yaml
+  - rabbitmq-svc.yaml
+  - rabbitmq-np.yaml

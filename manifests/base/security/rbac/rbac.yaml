@@ -1,0 +1,56 @@
+#----------------------------------------------------------------------------------------------------------------------
+# EKS ACCESS CONTROL — HOW IT WORKS (2 LAYERS)
+#----------------------------------------------------------------------------------------------------------------------
+#
+# To interact with an EKS cluster, TWO layers of permissions are required:
+#
+# LAYER 1 — AWS IAM (Authentication)
+# ------------------------------------
+# The IAM role/user must have IAM permissions to reach the cluster:
+#
+#   eks:DescribeCluster   → required to run "aws eks update-kubeconfig"
+#   eks:ListClusters      → required to list available clusters
+#
+# Without these → connection fails before K8s even sees the request.
+# You can have full K8s RBAC access but still be blocked here.
+#
+#
+# LAYER 2 — Kubernetes RBAC (Authorization)
+# ------------------------------------------
+# Even with IAM permissions, the role must be mapped in aws-auth ConfigMap
+# AND have a corresponding K8s ClusterRole/Role + Binding:
+#
+#   aws-auth ConfigMap  → maps IAM role/user to a K8s group
+#   ClusterRole/Role    → defines what actions are allowed
+#   ClusterRoleBinding  → binds the K8s group to the role
+#
+# Without this → AWS lets you in but K8s returns 403 Forbidden.
+# You can have eks:* in IAM but still be denied inside a specific cluster.
+#
+#
+# THE FULL FLOW
+# -------------
+# SSO login → assumes IAM role
+#           → Layer 1: IAM has eks:DescribeCluster?  NO  → blocked
+#                                                    YES → continue
+#           → Layer 2: role mapped in aws-auth?      NO  → Unauthorized
+#                                                    YES → continue
+#           → Layer 3: K8s RBAC allows action?       NO  → Forbidden
+#                                                    YES → allowed
+#
+#
+# CLUSTER CREATOR — AUTOMATIC ADMIN ACCESS
+# -----------------------------------------
+# The IAM role that creates the EKS cluster is automatically granted
+# system:masters (full admin) in K8s — this happens outside of aws-auth
+# and cannot be seen or modified via aws-auth.
+#
+# To disable this behavior (principle of least privilege):
+#
+#   bootstrap_cluster_creator_admin_permissions = false  # in aws_eks_cluster resource
+#
+# WARNING: Set this to false ONLY if you have another admin mapped in
+# aws-auth BEFORE applying — otherwise you will lock yourself out!
+
+# Could be useful: https://www.youtube.com/watch?v=iE9Qb8dHqWI&t=1052s
+#----------------------------------------------------------------------------------------------------------------------
