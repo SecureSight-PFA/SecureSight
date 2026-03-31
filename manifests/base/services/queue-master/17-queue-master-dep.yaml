@@ -16,6 +16,7 @@ spec:
       labels:
         name: queue-master
     spec:
+      serviceAccountName: queue-master-sa
       containers:
         - name: queue-master
           image: quay.io/powercloud/sock-shop-queue-master:latest

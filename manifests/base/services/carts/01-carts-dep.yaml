@@ -15,6 +15,7 @@ spec:
       labels:
         name: carts
     spec:
+      serviceAccountName: carts-sa
       containers:
         - name: carts
           image: quay.io/powercloud/sock-shop-carts:latest

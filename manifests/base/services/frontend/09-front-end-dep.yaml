@@ -14,6 +14,7 @@ spec:
       labels:
         name: front-end
     spec:
+      serviceAccountName: frontend-sa
       containers:
         - name: front-end
           image: quay.io/powercloud/sock-shop-front-end:latest

@@ -16,6 +16,7 @@ spec:
       labels:
         name: catalogue
     spec:
+      serviceAccountName: catalogue-sa
       containers:
         - name: catalogue
           image: quay.io/powercloud/sock-shop-catalogue:latest

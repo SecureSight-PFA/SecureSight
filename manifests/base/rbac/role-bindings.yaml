@@ -1,0 +1,119 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: frontend-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: frontend-role
+subjects:
+- kind: ServiceAccount
+  name: frontend-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: catalogue-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: catalogue-role
+subjects:
+- kind: ServiceAccount
+  name: catalogue-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: user-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: user-role
+subjects:
+- kind: ServiceAccount
+  name: user-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: carts-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: carts-role
+subjects:
+- kind: ServiceAccount
+  name: carts-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: orders-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: orders-role
+subjects:
+- kind: ServiceAccount
+  name: orders-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: payment-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: payment-role
+subjects:
+- kind: ServiceAccount
+  name: payment-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: shipping-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: shipping-role
+subjects:
+- kind: ServiceAccount
+  name: shipping-sa
+  namespace: sock-shop
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: queue-master-rolebinding
+  namespace: sock-shop
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: queue-master-role
+subjects:
+- kind: ServiceAccount
+  name: queue-master-sa
+  namespace: sock-shop

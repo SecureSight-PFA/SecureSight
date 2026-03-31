@@ -16,6 +16,7 @@ spec:
       labels:
         name: payment
     spec:
+      serviceAccountName: payment-sa
       containers:
         - name: payment
           image: quay.io/powercloud/sock-shop-payment:latest

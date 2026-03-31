@@ -16,6 +16,7 @@ spec:
       labels:
         name: user
     spec:
+      serviceAccountName: user-sa
       containers:
         - name: user
           image: quay.io/powercloud/sock-shop-user:latest

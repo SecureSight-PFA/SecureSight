@@ -16,6 +16,7 @@ spec:
       labels:
         name: orders
     spec:
+      serviceAccountName: orders-sa
       containers:
         - name: orders
           image: quay.io/powercloud/sock-shop-orders:latest
