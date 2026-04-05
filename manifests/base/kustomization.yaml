@@ -4,9 +4,6 @@ metadata:
   name: sock-shop
   namespace: sock-shop
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 sortOptions:
   order: fifo
 
@@ -64,9 +61,3 @@ resources:
   - network-policies/08-shipping-rabbitmq-policy.yaml
   - network-policies/09-session-policy.yaml
 
-
-secretGenerator:
-  - name: mongodb-creds
-    namespace: sock-shop
-    envs:
-      - env.secret
