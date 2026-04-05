@@ -1,5 +1,6 @@
 kustomize
-manifests/base/.env.secret
+manifests/overlays/aws-eks/env.secret
+manifests/overlays/minikube/env.secret
 # Binaries for programs and plugins
 *.exe
 *.exe~
