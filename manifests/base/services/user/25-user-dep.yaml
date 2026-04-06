@@ -33,10 +33,6 @@ spec:
           command: [ "/opt/user" ]
           args: [ "-port=8080" ,"-database=$(MONGO_DATABASE)", "-mongo-host=$(MONGO_HOST):$(MONGO_PORT)"]
 
-          envFrom:
-            - secretRef:
-                name: user-db-secret
-
           # Use configmap for env vars instead of hardcoding them in the deployment
           env:
             - name: MONGO_HOST

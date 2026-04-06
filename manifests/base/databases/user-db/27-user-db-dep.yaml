@@ -23,11 +23,6 @@ spec:
             - name: mongo
               containerPort: 27017
 
-          # MongoDB authentication
-          envFrom:
-            - secretRef:
-                name: user-db-secret
-
           securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:

@@ -23,8 +23,6 @@ spec:
           imagePullPolicy: IfNotPresent
           
           envFrom:
-            - configMapRef:
-                name: catalogue-config
             - secretRef:
                 name: catalogue-db-secret
 

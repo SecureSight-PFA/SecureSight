@@ -22,8 +22,7 @@ spec:
           imagePullPolicy: IfNotPresent
 
           envFrom:
-          - configMapRef:
-              name: carts-config
+  
           - secretRef:
               name: carts-db-secret
 

@@ -24,10 +24,11 @@ spec:
           command: [ "/usr/bin/java" ]
           args: [ "-cp", "/opt/app.jar", "-Dloader.path=/opt/lib", "org.springframework.boot.loader.PropertiesLauncher", "--port=8080" ]
           
-          # use configmap
-          envFrom:
-            - configMapRef:
-                name: shipping-config
+          env:
+            - name: ZIPKIN
+              value: zipkin.jaeger.svc.cluster.local
+            - name: JAVA_OPTS
+              value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
 
           resources:
             limits:

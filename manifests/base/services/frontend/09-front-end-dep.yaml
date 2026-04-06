@@ -31,10 +31,9 @@ spec:
           ports:
             - containerPort: 8079
 
-          # use configmap 
-          envFrom:
-            - configMapRef:
-                name: frontend-config
+          env:
+            - name: SESSION_REDIS
+              value: "true"
 
           securityContext:
             #runAsNonRoot: true

@@ -23,11 +23,6 @@ spec:
           imagePullPolicy: IfNotPresent
           command: [ "/usr/bin/java" ]
           args: [ "-cp", "/opt/app.jar", "-Dloader.path=/opt/lib", "org.springframework.boot.loader.PropertiesLauncher", "--port=8080" ]
-          
-          # use configmap
-          envFrom:
-            - configMapRef:
-                name: queue-master-config
 
           resources:
             limits:

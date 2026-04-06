@@ -30,9 +30,9 @@ spec:
 
           volumeMounts:
             - name: carts-db-temp-vol
-              mountPath: /tmp # this for temporary data
+              mountPath: /tmp 
 
-            - name: mongo-storage   # mount this pv for high-durability pv 
+            - name: mongo-storage   
               mountPath: /data/db
 
       volumes:
@@ -44,7 +44,6 @@ spec:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
 
-  # this volumefor durable storage
   volumeClaimTemplates: 
     - metadata:
         name: mongo-storage

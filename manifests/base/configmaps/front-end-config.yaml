@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-config
-  namespace: sock-shop
-  labels:
-    app: front-end
-data:
-  SESSION_REDIS: "true"
