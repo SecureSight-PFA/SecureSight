@@ -7,7 +7,7 @@ module "vpc" {
 
 module "subnets" {
   source = "../../modules/subnets"
-  
+
   vpc_id               = module.vpc.vpc_id
   internet_gateway_id  = module.vpc.internet_gateway_id
   environment          = var.environment

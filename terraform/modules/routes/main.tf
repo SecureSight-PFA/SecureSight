@@ -8,7 +8,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name        = "${var.environment}-public-rt"
+    Name = "${var.environment}-public-rt"
   }
 }
 
@@ -26,12 +26,12 @@ resource "aws_route_table" "private" {
   vpc_id = var.vpc_id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = var.nat_gateway_ids[count.index]
   }
 
   tags = {
-    Name        = "${var.environment}-private-rt-${count.index}"
+    Name = "${var.environment}-private-rt-${count.index}"
   }
 }
 
