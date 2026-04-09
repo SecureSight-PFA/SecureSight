@@ -28,3 +28,10 @@ module "routes" {
   nat_gateway_ids     = module.subnets.nat_gateway_ids
   environment         = var.environment
 }
+
+module "nsg" {
+  source = "../../modules/nsg"
+
+  vpc_id      = module.vpc.vpc_id
+  environment = var.environment
+}

@@ -1,6 +1,7 @@
 kustomize
 manifests/overlays/aws-eks/env.secret
 manifests/overlays/minikube/env.secret
+.terraform/
 # Binaries for programs and plugins
 *.exe
 *.exe~
