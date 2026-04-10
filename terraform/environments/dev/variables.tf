@@ -42,3 +42,23 @@ variable "private_subnet_cidrs" {
   type        = list(string)
   default     = ["10.0.10.0/24", "10.0.11.0/24"]
 }
+
+variable "node_instance_type" {
+  description = "EC2 instance type for EKS nodes"
+  type        = string
+}
+
+variable "node_desired" {
+  description = "Desired number of nodes"
+  type        = number
+}
+
+variable "node_min" {
+  description = "Minimum number of nodes"
+  type        = number
+}
+
+variable "node_max" {
+  description = "Maximum number of nodes"
+  type        = number
+}

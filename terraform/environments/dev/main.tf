@@ -36,8 +36,31 @@ module "nsg" {
   environment = var.environment
 }
 
-module "iam" {
-  source = "../../modules/iam"
+module "iam_pre_eks" {
+  source = "../../modules/iam/pre-eks"
 
   environment = var.environment
+}
+
+module "eks" {
+  source               = "../../modules/eks"
+  cluster_name         = var.cluster_name
+  environment          = var.environment
+  kubernetes_version   = var.kubernetes_version
+  eks_cluster_role_arn = module.iam_pre_eks.eks_cluster_role_arn
+  eks_nodes_role_arn   = module.iam_pre_eks.eks_nodes_role_arn
+  eks_cluster_sg_id    = module.nsg.eks_cluster_sg_id
+  public_subnet_ids    = module.subnets.public_subnet_ids
+  private_subnet_ids   = module.subnets.private_subnet_ids
+  node_instance_type   = var.node_instance_type
+  node_desired         = var.node_desired
+  node_min             = var.node_min
+  node_max             = var.node_max
+}
+
+module "iam_post_eks" {
+  source            = "../../modules/iam/post-eks"
+  environment       = var.environment
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
 }
