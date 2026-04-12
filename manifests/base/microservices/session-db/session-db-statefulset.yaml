@@ -4,36 +4,46 @@ metadata:
   name: session-db
   namespace: sock-shop
   labels:
-    name: session-db
+    app: session-db
 spec:
-  serviceName: "session-db"  
+  serviceName: "session-db"
   replicas: 2
+
   selector:
     matchLabels:
-      name: session-db
+      app: session-db
+
   template:
     metadata:
       labels:
-        name: session-db
+        app: session-db
       annotations:
         prometheus.io/scrape: "false"
+
     spec:
+      securityContext:
+        runAsUser: 999   
+        fsGroup: 999
+
       containers:
         - name: session-db
-          image: registry.redhat.io/rhel9/redis-7:1-29.1726663415
+          image: redis:7-alpine
           imagePullPolicy: IfNotPresent
           ports:
             - name: redis
               containerPort: 6379
+
           securityContext:
             capabilities:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
+
           volumeMounts:
             - name: session-db-vol
               mountPath: /data
-  volumes:
-    - name: session-db-vol
-      emptyDir:
-        medium: Memory
+
+      volumes:
+        - name: session-db-vol
+          emptyDir:
+            medium: Memory

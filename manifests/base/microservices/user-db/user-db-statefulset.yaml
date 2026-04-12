@@ -4,35 +4,47 @@ metadata:
   name: user-db
   namespace: sock-shop
   labels:
-    name: user-db
+    app: user-db
+
 spec:
-  serviceName: "user-db"  
+  serviceName: "user-db"
   replicas: 2
+
   selector:
     matchLabels:
-      name: user-db
+      app: user-db
+
   template:
     metadata:
       labels:
-        name: user-db
+        app: user-db
+
     spec:
+      securityContext:        # pod-level: correct position
+        fsGroup: 999
+
       containers:
         - name: user-db
           image: quay.io/powercloud/sock-shop-user-db:latest
           imagePullPolicy: IfNotPresent
+          securityContext:    # container-level
+            runAsUser: 999
+            readOnlyRootFilesystem: true
+
           ports:
             - name: mongo
               containerPort: 27017
-          securityContext:
-            readOnlyRootFilesystem: true
+
           volumeMounts:
             - name: users-db-vol
               mountPath: /data/db-users
             - name: users-db-temp-vol
               mountPath: /tmp
-          volumes:
-          - name: users-db-temp-vol       
-            emptyDir: {}
+
+      volumes:
+        - name: users-db-temp-vol
+          emptyDir: {}
+
   volumeClaimTemplates:
     - metadata:
         name: users-db-vol
@@ -41,4 +53,4 @@ spec:
         storageClassName: ebs-sc
         resources:
           requests:
-            storage: 1Gi  
+            storage: 1Gi

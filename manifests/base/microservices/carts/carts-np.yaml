@@ -6,17 +6,20 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: carts
-      policyTypes:
-        - Ingress
+      app: carts   
+
+  policyTypes:
+  - Ingress        
+
   ingress:
-    - from:
-        - podSelector:
-            matchLabels:
-              name: front-end
-        - podSelector:
-            matchLabels:
-              name: orders
-      ports:
-        - protocol: TCP
-          port: 8080
+  - from:
+    - podSelector:
+        matchLabels:
+          app: front-end   
+    - podSelector:
+        matchLabels:
+          app: orders      
+
+    ports:
+    - protocol: TCP
+      port: 8080

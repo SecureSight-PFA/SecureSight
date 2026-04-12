@@ -3,17 +3,20 @@ kind: NetworkPolicy
 metadata:
   name: user-db-access
   namespace: sock-shop
+
 spec:
   podSelector:
     matchLabels:
-      name: user-db
+      app: user-db
+
   policyTypes:
     - Ingress
+
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: user  
+              app: user
       ports:
         - protocol: TCP
-          port: 27017      
+          port: 27017

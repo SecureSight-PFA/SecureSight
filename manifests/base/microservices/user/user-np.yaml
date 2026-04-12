@@ -3,20 +3,23 @@ kind: NetworkPolicy
 metadata:
   name: user-access
   namespace: sock-shop
+
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: user
-      policyTypes:
-        - Ingress
+      app: user
+
+  policyTypes:
+    - Ingress
+
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              name: front-end
+              app: front-end
         - podSelector:
             matchLabels:
-              name: orders
+              app: orders
       ports:
         - protocol: TCP
           port: 8080

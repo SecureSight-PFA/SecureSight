@@ -40,6 +40,7 @@ spec:
               value: mongodb
           securityContext:
             runAsNonRoot: true
+            runAsUser: 10001
             ###
             capabilities:
               drop:

@@ -6,15 +6,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: catalogue
-      policyTypes:
-        - Ingress
+      app: catalogue
+  policyTypes:
+  - Ingress
   ingress:
-    - from:
-        - podSelector:
-            matchLabels:
-              name: front-end
-      ports:
-        - protocol: TCP
-          port: 8080 
-
+  - from:
+    - podSelector:
+        matchLabels:
+          app: front-end
+    ports:
+    - protocol: TCP
+      port: 8080

@@ -3,17 +3,20 @@ kind: NetworkPolicy
 metadata:
   name: shipping-access
   namespace: sock-shop
+
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: shipping
-      policyTypes:
-        - Ingress
+      app: shipping
+
+  policyTypes:
+    - Ingress
+
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              name: orders
+              app: orders
       ports:
         - protocol: TCP
           port: 8080

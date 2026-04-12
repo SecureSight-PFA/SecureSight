@@ -18,6 +18,8 @@ spec:
       annotations:
         prometheus.io/scrape: "false"
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: rabbitmq
           image: quay.io/powercloud/rabbitmq:latest
@@ -30,12 +32,13 @@ spec:
             - containerPort: 5672
               name: rabbitmq
           securityContext:
+            runAsUser: 999
             readOnlyRootFilesystem: false
           volumeMounts:
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq
         - name: rabbitmq-exporter
-          image: ghcr.io/kbudde/rabbitmq_exporter:1.0.0 # sidecar that exposes metrics
+          image: ghcr.io/kbudde/rabbitmq_exporter:1.0.0 # sidecar container for metrics
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090

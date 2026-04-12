@@ -17,7 +17,7 @@ resources:
   - session-db/
   - catalogue-db/
   - carts-db/
-  - payment-db/
+  - user-db/
   - orders-db/
 
 

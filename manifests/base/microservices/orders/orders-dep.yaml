@@ -33,6 +33,7 @@ spec:
             - containerPort: 8080
           securityContext:
             runAsNonRoot: true
+            runAsUser: 10001
             capabilities:
               drop:
                 - all
@@ -40,12 +41,7 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
-     # nodeSelector:
-     #   node-role.kubernetes.io/worker: ""
+
           livenessProbe:
             httpGet:
               path: /health
@@ -58,3 +54,10 @@ spec:
               port: 8080
             initialDelaySeconds: 180
             periodSeconds: 3
+
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+     # nodeSelector:
+     #   node-role.kubernetes.io/worker: ""

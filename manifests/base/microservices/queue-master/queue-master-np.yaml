@@ -7,19 +7,21 @@ spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/name: queue-master
-      policyTypes:
-        - Ingress
+
+  policyTypes:
+    - Ingress
+
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              name: shipping
+              app: shipping
         - podSelector:
             matchLabels:
-              name: orders
+              app: orders
         - podSelector:
             matchLabels:
-              name: rabbitmq
+              app: rabbitmq
       ports:
         - protocol: TCP
           port: 8080

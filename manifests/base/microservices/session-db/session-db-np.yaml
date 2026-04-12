@@ -6,14 +6,16 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      name: session-db
+      app: session-db
+
   policyTypes:
     - Ingress
+
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: front-end     
+              app: front-end
       ports:
         - protocol: TCP
           port: 6379
