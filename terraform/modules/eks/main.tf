@@ -18,6 +18,39 @@ resource "aws_kms_key" "eks_secrets" {
   enable_key_rotation     = true
 }
 
+data "aws_caller_identity" "current" {}
+
+# KMS policy to allow EKS to use the KMS key for secrets encryption 
+resource "aws_kms_key_policy" "eks_policy" {
+  key_id = aws_kms_key.eks_secrets.key_id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowEksControlPlane"
+        Effect    = "Allow"
+        Principal = { Service = "eks.amazonaws.com" }
+        Action    = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowTerraformCaller"
+        Effect = "Allow"
+        Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # KMS alias for easier reference
 resource "aws_kms_alias" "eks_secrets" {
   name          = "alias/${var.eks_cluster_name}-eks-secrets"
@@ -48,4 +81,6 @@ resource "aws_eks_cluster" "eks" {
     }
     resources = ["secrets"]
   }
+
+  depends_on = [aws_kms_key_policy.eks_policy]
 }

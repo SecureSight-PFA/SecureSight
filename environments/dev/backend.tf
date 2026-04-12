@@ -1,8 +1,7 @@
 # Documentation: https://developer.hashicorp.com/terraform/language/backend/s3
 
 resource "aws_s3_bucket" "terraform_state_securesight" {
-    bucket        = "s3-bucket-securesight"
-    object_lock_enabled = true
+  bucket        = "s3-bucket-securesight"
 }
 
 # Enabling versioning 
@@ -35,22 +34,10 @@ resource "aws_s3_bucket_public_access_block" "s3_public_access_block" {
   restrict_public_buckets = true
 }
 
-# Object lock configuration 
-resource "aws_s3_bucket_object_lock_configuration" "s3_object_lock" {
-  bucket = aws_s3_bucket.terraform_state_securesight.id
-
-  rule {
-    default_retention {
-      mode = "COMPLIANCE"
-      days = 5
-    }
-  }
-}
-
 terraform {
   backend "s3" {
     bucket         = "s3-bucket-securesight"
-    key            = "securesight/statefile/terraform.tfstate"
+    key            = "terraform.tfstate"
     region         = "us-east-2"
     encrypt        = true
     use_lockfile   = true

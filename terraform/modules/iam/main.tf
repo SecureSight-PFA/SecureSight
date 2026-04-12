@@ -26,41 +26,6 @@ resource "aws_iam_role_policy_attachment" "eks" {
   role       = aws_iam_role.eks.name 
 }
 
-data "aws_caller_identity" "current" {}
-
-# KMS policy to allow EKS to use the KMS key for secrets encryption
-resource "aws_kms_key_policy" "eks_secrets" {
-  key_id = var.kms_id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      # Root user permissions (for key management)
-      {
-        Sid      = "EnableRootPermissions"
-        Effect   = "Allow"
-        Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" }
-        Action   = "kms:*"
-        Resource = "*"
-      },
-      # EKS cluster role usage
-      {
-        Sid    = "AllowEKSClusterRoleUseKey"
-        Effect = "Allow"
-        Principal = { AWS = aws_iam_role.eks.arn }
-        Action = [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:DescribeKey"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
 #----------------------------------------------------------------------------------------------------------
 # Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 
@@ -161,4 +126,46 @@ resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
   namespace       = "kube-system"
   service_account = "cluster-autoscaler"
   role_arn        = aws_iam_role.cluster_autoscaler.arn
+}
+
+# -------------------- IAM for CSI driver to access secrets ---------------------------
+
+data "aws_iam_policy_document" "db_assume" {
+  statement {
+    actions = ["sts:AssumeRole", "sts:TagSession"]
+    effect  = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "db_role" {
+  name               = "${var.eks_cluster_name}-db-role"
+  assume_role_policy = data.aws_iam_policy_document.db_assume.json
+}
+
+resource "aws_iam_policy" "db_secrets" {
+  name = "${var.eks_cluster_name}-db-secrets"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "secretsmanager:GetSecretValue"
+      Resource = "*"   
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "db_secrets" {
+  role       = aws_iam_role.db_role.name
+  policy_arn = aws_iam_policy.db_secrets.arn
+}
+
+resource "aws_eks_pod_identity_association" "db" {
+  cluster_name    = var.eks_cluster_name
+  namespace       = "sock-shop"
+  service_account = "db-sa"           
+  role_arn        = aws_iam_role.db_role.arn
 }

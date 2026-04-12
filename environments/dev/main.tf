@@ -1,12 +1,12 @@
 module "vpc" {
-  source   = "../../modules/vpc"
+  source   = "../../terraform/modules/vpc"
 
   vpc_cidr = var.vpc_cidr
   vpc_name = var.vpc_name
 }
 
 module "subnets" {
-  source = "../../modules/subnets"
+  source = "../../terraform/modules/subnets"
 
   vpc_id               = module.vpc.vpc_id
   availability_zones   = var.availability_zones
@@ -16,7 +16,7 @@ module "subnets" {
 }
 
 module "igw" {
-  source   = "../../modules/igw"
+  source   = "../../terraform/modules/igw"
 
   vpc_id   = module.vpc.vpc_id
   igw_name = var.igw_name
@@ -24,13 +24,13 @@ module "igw" {
 }
 
 module "eip" {
-  source = "../../modules/eip"
+  source = "../../terraform/modules/eip"
 
   nat_eip_name = var.nat_eip_name
 }
 
 module "nat" {
-  source = "../../modules/nat"
+  source = "../../terraform/modules/nat"
 
   nat_gateway_name  = var.nat_gateway_name
   public_subnet_id  = module.subnets.public_subnet_ids[0]
@@ -39,7 +39,7 @@ module "nat" {
 }
 
 module "routes" {
-  source = "../../modules/routes"
+  source = "../../terraform/modules/routes"
 
   vpc_id                   = module.vpc.vpc_id
   private_route_table_name = var.private_route_table_name
@@ -51,15 +51,16 @@ module "routes" {
 }
 
 module "iam" {
-  source = "../../modules/iam"
+  source = "../../terraform/modules/iam"
 
   eks_iam_role_name                 = var.eks_iam_role_name
   node_iam_role_name                = var.node_iam_role_name
   kms_id                            = module.eks.kms_id
+  eks_cluster_name                  = module.eks.eks_cluster_name
 }
 
 module "eks" {
-  source = "../../modules/eks"
+  source = "../../terraform/modules/eks"
 
   vpc_id             = module.vpc.vpc_id
   eks_cluster_name   = var.eks_cluster_name
@@ -69,7 +70,7 @@ module "eks" {
 }
 
 module "nodes" {
-  source = "../../modules/nodes"
+  source = "../../terraform/modules/nodes"
 
   eks_cluster_name   = module.eks.eks_cluster_name
   node_group_name    = var.node_group_name
@@ -88,11 +89,50 @@ module "nodes" {
 }
 
 module "lb" {
-  source = "../../modules/lb" 
+  source = "../../terraform/modules/lb" 
 
  eks_cluster_name         = module.eks.eks_cluster_name
  vpc_id                   = module.vpc.vpc_id
  lbc_iam_role             = var.lbc_iam_role
  lbc_name                 = var.lbc_name
  lbc_namespace            = var.lbc_namespace
+}
+
+module "ebs" {
+  source = "../../terraform/modules/ebs" 
+  eks_cluster_name            = module.eks.eks_cluster_name
+}
+
+module "csi_driver" {
+  source                = "../../terraform/modules/csi-driver"
+
+  eks_cluster_name      = var.eks_cluster_name
+  csi_chart_name        = var.csi_chart_name
+  vpc_id                = module.vpc.vpc_cidr
+  aws_csi_chart_name    = var.aws_csi_chart_name
+}
+
+module "carts_db_secret" {
+  source                   = "../../terraform/modules/secrets-manager"
+  secret_name              = var.carts_db_secret_name
+}
+
+module "catalogue_db_secret" {
+  source                   = "../../terraform/modules/secrets-manager"
+  secret_name              = var.catalogue_db_secret_name
+}
+
+module "user_db_secret" {
+  source                   = "../../terraform/modules/secrets-manager"
+  secret_name              = var.user_db_secret_name
+}
+
+module "session_db_secret" {
+  source                   = "../../terraform/modules/secrets-manager"
+  secret_name              = var.session_db_secret_name
+}
+
+module "orders_db_secret" {
+  source                   = "../../terraform/modules/secrets-manager"
+  secret_name              = var.orders_db_secret_name
 }

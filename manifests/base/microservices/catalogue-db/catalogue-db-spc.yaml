@@ -1,0 +1,21 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: catalogue-db-spc
+  namespace: sock-shop
+spec:
+  provider: aws
+  parameters:
+    objects: |
+      - objectName: "securesight-dev-catalogue-db-secret"
+        objectType: "secretsmanager"
+        jmesPath:
+          - path: password
+            objectAlias: password
+    usePodIdentity: "true"
+  secretObjects:
+    - secretName: catalogue-db-secret    
+      type: Opaque
+      data:
+        - objectName: password
+          key: password

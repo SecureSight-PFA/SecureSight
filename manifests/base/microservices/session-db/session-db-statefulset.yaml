@@ -33,8 +33,6 @@ spec:
           volumeMounts:
             - name: session-db-vol
               mountPath: /data
-      nodeSelector:
-        node-role.kubernetes.io/worker: ""
   volumes:
     - name: session-db-vol
       emptyDir:

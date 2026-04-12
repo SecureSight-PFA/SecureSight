@@ -1,6 +1,3 @@
-# IMPORTANT: The actual role of the Application Load Balancer (ALB) is to route traffic to the nodes of the EKS cluster. 
-# When we use the AWS Load Balancer Controller, we can integrate the ALB directly with Kubernetes Ingress, 
-
 # Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon
 
 # Enabling the pod identity addon, this agent (daemonset) will run on every node in the cluster

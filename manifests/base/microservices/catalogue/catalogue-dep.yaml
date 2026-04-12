@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,14 +15,21 @@ spec:
       labels:
         name: catalogue
     spec:
+      serviceAccountName: db-sa          
       containers:
         - name: catalogue
           image: quay.io/powercloud/sock-shop-catalogue:latest
           imagePullPolicy: IfNotPresent
-          command: [ "/opt/app" ]
+          command: ["/opt/app"]
+          env:
+            - name: DB_PASSWORD           
+              valueFrom:
+                secretKeyRef:
+                  name: catalogue-db-secret
+                  key: password
           args:
             - -port=8080
-            - -DSN=root:admin@tcp(catalogue-db:3306)/socksdb
+            - -DSN=root:$(DB_PASSWORD)@tcp(catalogue-db:3306)/socksdb 
           resources:
             limits:
               cpu: 200m
@@ -39,6 +45,12 @@ spec:
               drop:
                 - all
             readOnlyRootFilesystem: true
+         
+          volumeMounts:
+            - name: secrets-store        
+              mountPath: /mnt/secrets
+              readOnly: true
+
           livenessProbe:
             httpGet:
               path: /health
@@ -52,3 +64,10 @@ spec:
             initialDelaySeconds: 180
             periodSeconds: 3
 
+      volumes:
+        - name: secrets-store           
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: catalogue-db-spc

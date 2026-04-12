@@ -118,3 +118,41 @@ variable "lbc_namespace" {
   description = "The namespace of the load balancer controller"
   type        = string
 }
+
+# CSI
+variable "csi_chart_name" {
+  type        = string
+  description = "Helm release name for the CSI driver chart"
+}
+
+variable "aws_csi_chart_name" {
+  type        = string
+  description = "Helm release name for the AWS CSI driver chart"
+}
+
+# Secrets Manager
+variable "carts_db_secret_name" {
+  description = "Name of the Secrets Manager secret for the carts database credentials"
+  type        = string  
+}
+
+variable "catalogue_db_secret_name" {
+  description = "Name of the Secrets Manager secret for the catalogue database credentials"
+  type        = string  
+}
+
+variable "user_db_secret_name" {
+  description = "Name of the Secrets Manager secret for the user database credentials"
+  type        = string  
+}
+
+variable "session_db_secret_name" {
+  description = "Name of the Secrets Manager secret for the session database credentials"
+  type        = string  
+}
+
+variable "orders_db_secret_name" {
+  description = "Name of the Secrets Manager secret for the orders database credentials"
+  type        = string  
+} 
+

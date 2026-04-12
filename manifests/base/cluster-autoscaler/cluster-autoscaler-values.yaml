@@ -31,7 +31,7 @@ extraArgs:
 # Then apply it:
 # helm repo add autoscaler https://kubernetes.github.io/autoscaler
 # helm repo update
-# helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
-#   --namespace kube-system \
-#   --create-namespace \
-#   --values manifests/base/microservices/cluster-autoscaler/cluster-autoscaler-values.yaml
+# helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler --namespace kube-system --values cluster-autoscaler-values.yaml
+
+# To verify that cluster-autoscaler has started, run:
+# kubectl --namespace=kube-system get pods -l "app.kubernetes.io/name=aws-cluster-autoscaler,app.kubernetes.io/instance=cluster-autoscaler"

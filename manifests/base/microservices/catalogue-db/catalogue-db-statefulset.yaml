@@ -16,6 +16,7 @@ spec:
       labels:
         name: catalogue-db
     spec:
+      serviceAccountName: db-sa
       containers:
         - name: catalogue-db
           image: quay.io/powercloud/sock-shop-catalogue-db:latest
@@ -24,7 +25,7 @@ spec:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongodb-creds
+                  name: catalogue-db-secret
                   key: password
             - name: MARIADB_USER
               value: root
@@ -36,6 +37,9 @@ spec:
           volumeMounts:
             - name: catalogue-data
               mountPath: /var/lib/mysql
+            - name: secrets-store         
+              mountPath: /mnt/secrets
+              readOnly: true
           securityContext:
             privileged: false
             seccompProfile:
@@ -43,11 +47,21 @@ spec:
             capabilities:
               drop:
                 - ALL
+         
+      volumes:                           
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: catalogue-db-spc
+
   volumeClaimTemplates:      
     - metadata:
         name: catalogue-data
       spec:
         accessModes: ["ReadWriteOnce"]
+        storageClassName: ebs-sc
         resources:
           requests:
-            storage: 5Gi   
+            storage: 1Gi   

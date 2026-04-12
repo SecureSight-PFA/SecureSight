@@ -6,7 +6,7 @@ metadata:
   labels:
     name: rabbitmq
 spec:
-  serviceName: "rabbitmq"  
+  serviceName: "rabbitmq"
   replicas: 2
   selector:
     matchLabels:
@@ -35,7 +35,7 @@ spec:
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq
         - name: rabbitmq-exporter
-          image: ghcr.io/kbudde/rabbitmq_exporter:1.0.0
+          image: ghcr.io/kbudde/rabbitmq_exporter:1.0.0 # sidecar that exposes metrics
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
@@ -45,6 +45,7 @@ spec:
         name: rabbitmq-data
       spec:
         accessModes: ["ReadWriteOnce"]
+        storageClassName: ebs-sc
         resources:
           requests:
-            storage: 5Gi  
+            storage: 1Gi
