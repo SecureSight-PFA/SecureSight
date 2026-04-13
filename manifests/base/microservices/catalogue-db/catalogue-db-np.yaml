@@ -13,7 +13,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: catalogue
+              name: catalogue
       ports:
         - protocol: TCP
-          port: 3306  
+          port: 3306

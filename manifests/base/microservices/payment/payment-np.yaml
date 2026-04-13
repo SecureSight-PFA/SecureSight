@@ -6,14 +6,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: payment
+      name: payment
   policyTypes:
   - Ingress
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          app: orders
+          name: orders
     ports:
     - protocol: TCP
       port: 8080

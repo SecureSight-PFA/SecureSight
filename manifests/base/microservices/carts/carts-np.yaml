@@ -6,20 +6,17 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: carts   
-
+      name: carts
   policyTypes:
-  - Ingress        
-
+  - Ingress
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          app: front-end   
+          name: front-end
     - podSelector:
         matchLabels:
-          app: orders      
-
+          name: orders
     ports:
     - protocol: TCP
       port: 8080

@@ -7,7 +7,7 @@ metadata:
     app: session-db
 spec:
   serviceName: "session-db"
-  replicas: 2
+  replicas: 1
 
   selector:
     matchLabels:

@@ -5,3 +5,5 @@ resources:
   - carts-db-statefulset.yaml
   - carts-db-svc.yaml
   - carts-db-np.yaml
+  - db-serviceaccount.yaml
+  - db-storageclass.yaml

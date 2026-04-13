@@ -17,6 +17,9 @@ spec:
         - podSelector:
             matchLabels:
               name: queue-master
+        - podSelector:
+            matchLabels:
+              name: orders
       ports:
         - protocol: TCP
           port: 5672

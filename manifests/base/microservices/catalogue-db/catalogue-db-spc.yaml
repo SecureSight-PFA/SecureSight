@@ -9,13 +9,6 @@ spec:
     objects: |
       - objectName: "securesight-dev-catalogue-db-secret"
         objectType: "secretsmanager"
-        jmesPath:
-          - path: password
-            objectAlias: password
+        objectAlias: password
     usePodIdentity: "true"
-  secretObjects:
-    - secretName: catalogue-db-secret    
-      type: Opaque
-      data:
-        - objectName: password
-          key: password
+ 

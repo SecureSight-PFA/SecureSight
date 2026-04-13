@@ -13,7 +13,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: carts
+              name: carts
       ports:
         - protocol: TCP
-          port: 27017  
+          port: 27017

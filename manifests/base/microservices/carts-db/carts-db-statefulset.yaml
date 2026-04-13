@@ -7,7 +7,7 @@ metadata:
     name: carts-db
 spec:
   serviceName: "carts-db"
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       name: carts-db

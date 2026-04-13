@@ -5,3 +5,4 @@ resources:
   - catalogue-db-statefulset.yaml
   - catalogue-db-svc.yaml
   - catalogue-db-np.yaml
+  - catalogue-db-spc.yaml

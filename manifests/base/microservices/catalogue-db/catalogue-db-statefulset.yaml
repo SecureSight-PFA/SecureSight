@@ -6,8 +6,8 @@ metadata:
   labels:
     name: catalogue-db
 spec:
-  serviceName: "catalogue-db"  
-  replicas: 2
+  serviceName: "catalogue-db"
+  replicas: 1
   selector:
     matchLabels:
       name: catalogue-db
@@ -17,16 +17,18 @@ spec:
         name: catalogue-db
     spec:
       serviceAccountName: db-sa
+      securityContext:
+        fsGroup: 999
       containers:
         - name: catalogue-db
           image: quay.io/powercloud/sock-shop-catalogue-db:latest
           imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export MARIADB_ROOT_PASSWORD=$(cat /mnt/secrets/password)
+              exec docker-entrypoint.sh mariadbd
           env:
-            - name: MARIADB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: catalogue-db-secret
-                  key: password
             - name: MARIADB_USER
               value: root
             - name: MARIADB_DATABASE
@@ -37,18 +39,23 @@ spec:
           volumeMounts:
             - name: catalogue-data
               mountPath: /var/lib/mysql
-            - name: secrets-store         
+            - name: secrets-store
               mountPath: /mnt/secrets
               readOnly: true
           securityContext:
+            runAsUser: 0
             privileged: false
             seccompProfile:
               type: RuntimeDefault
             capabilities:
               drop:
                 - ALL
-         
-      volumes:                           
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+
+      volumes:
         - name: secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
@@ -56,7 +63,7 @@ spec:
             volumeAttributes:
               secretProviderClass: catalogue-db-spc
 
-  volumeClaimTemplates:      
+  volumeClaimTemplates:
     - metadata:
         name: catalogue-data
       spec:
@@ -64,4 +71,4 @@ spec:
         storageClassName: ebs-sc
         resources:
           requests:
-            storage: 1Gi   
+            storage: 1Gi
