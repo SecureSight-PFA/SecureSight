@@ -170,8 +170,8 @@ resource "aws_eks_pod_identity_association" "db" {
   role_arn        = aws_iam_role.db_role.arn
 }
 
-# --------------------------------------------------------------------------------
-/* Access entruies for SSO groups to access the cluster, mapped to Kubernetes groups for RBAC.  This is the modern way that replaces the old aws-auth configmap. It is more secure and easier to manage, but requires AWS SSO and IAM Identity Center setup.
+# ------------------------------------- RBAC for SSO groups -------------------------------------------
+/* Access entries for SSO groups to access the cluster, mapped to Kubernetes groups for RBAC. This is the modern way that replaces the old aws-auth configmap. It is more secure and easier to manage, but requires AWS SSO and IAM Identity Center setup.
 resource "aws_eks_access_entry" "dev_team" {
   cluster_name  = var.cluster_name
   principal_arn = "arn:aws:iam::014498640042:role/AWSReservedSSO_DevTeam_xxx"
@@ -185,4 +185,50 @@ resource "aws_eks_access_entry" "sre_team" {
 
   kubernetes_groups = ["sre"]
 }
+
++ We create RBAC Roles and RoleBindings!
+
+*/
+
+# Option 1:
+# SSO IAM Role
+#   ↓
+# EKS Access Entry (maps to group)
+#   ↓
+# Kubernetes RBAC (RoleBinding) (fine-grained control))
+#   ↓
+# Permissions enforced
+# -------------------------------------------------
+
+# Option 2:
+# SSO IAM Role
+#   ↓
+# EKS Access Entry
+#    ↓
+# AWS Access Policy (View/Edit/Admin)
+#    ↓
+# Direct Kubernetes API permissions (AWS predefined access levels)
+
+/* DevOps team READ-ONLY:
+resource "aws_eks_access_entry" "devops" {
+  cluster_name  = var.cluster_name
+  principal_arn = "arn:aws:iam::014498640042:role/AWSReservedSSO_DevOpsTeam_xxx"
+}
+
+resource "aws_eks_access_policy_association" "devops_view" {
+  cluster_name  = var.cluster_name
+  principal_arn = aws_eks_access_entry.devops.principal_arn
+
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
+The DevOps team now gets (without creating rolebindings):
+
+- kubectl get pods
+- kubectl get services
+- kubectl get namespaces
 */
