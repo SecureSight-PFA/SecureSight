@@ -1,0 +1,35 @@
+# For Prometheus and Grafana do we need to create RBAC manually?
+# Depends on the chart, most official Helm charts (like kube-prometheus-stack) already include RBAC.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana
+  namespace: monitoring
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: grafana-reader
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - services
+      - namespaces
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: grafana-binding
+roleRef:
+  kind: ClusterRole
+  name: grafana-reader
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: monitoring

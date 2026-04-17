@@ -1,3 +1,46 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: sock-shop
+  name: dev-role
+rules:
+  - apiGroups: ["", "apps", "batch"]
+    resources:
+      - pods
+      - services
+      - deployments
+      - replicasets
+      - configmaps
+      - jobs
+      - statefulsets
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dev-binding
+  namespace: sock-shop
+subjects:
+  - kind: Group
+    name: dev   ###
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: dev-role
+  apiGroup: rbac.authorization.k8s.io
+
+
+
+
+
+
+
+
+
+
+
+
 #----------------------------------------------------------------------------------------------------------------------
 # EKS ACCESS CONTROL — HOW IT WORKS (2 LAYERS)
 #----------------------------------------------------------------------------------------------------------------------
