@@ -2,43 +2,58 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: orders-db
-  namespace: sock-shop
   labels:
     name: orders-db
+  namespace: sock-shop
 spec:
-  serviceName: "orders-db"  
+  serviceName: orders-db
   replicas: 1
   selector:
     matchLabels:
       name: orders-db
+
   template:
     metadata:
       labels:
         name: orders-db
+
     spec:
+      securityContext:
+        fsGroup: 999
+
       containers:
         - name: orders-db
-          image: quay.io/mongodb/mongodb:org-4.4-standalone-ubuntu2204
-          imagePullPolicy: IfNotPresent
+          image: mongo:latest
           ports:
             - name: mongo
               containerPort: 27017
+
           securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            capabilities:
+              drop:
+                - all
             readOnlyRootFilesystem: true
+
           volumeMounts:
-            - name: orders-db-vol
+            - name: orders-db-data
               mountPath: /data/db
-            - name: orders-db-temp-vol
+            - name: tmp-volume
               mountPath: /tmp
+
       volumes:
-          - name: orders-db-temp-vol      
-            emptyDir: {}
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+
   volumeClaimTemplates:
     - metadata:
-        name: orders-db-vol
+        name: orders-db-data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: ebs-sc
         resources:
           requests:
-            storage: 1Gi   
+            storage: 1Gi

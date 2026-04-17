@@ -1,10 +1,7 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: queue-master
-  labels:
-    name: queue-master
   namespace: sock-shop
 spec:
   replicas: 2
@@ -18,40 +15,20 @@ spec:
     spec:
       containers:
         - name: queue-master
-          image: quay.io/powercloud/sock-shop-queue-master:latest
-          imagePullPolicy: IfNotPresent
-          command: [ "/usr/bin/java" ]
-          args: [ "-cp", "/opt/app.jar", "-Dloader.path=/opt/lib", "org.springframework.boot.loader.PropertiesLauncher", "--port=8080" ]
+          image: weaveworksdemos/queue-master:0.3.1
+          ports:
+            - containerPort: 80
           env:
-            - name: JAVA_OPTS
-              value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_USERNAME
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest
           resources:
-            limits:
-              cpu: 300m
-              memory: 500Mi
             requests:
               cpu: 100m
-              memory: 300Mi
-          ports:
-            - containerPort: 8080
-          ###
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 10001
-            capabilities:
-              drop:
-                - all
-     # nodeSelector:
-     #   node-role.kubernetes.io/worker: ""
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 300
-            periodSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 180
-            periodSeconds: 3
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi

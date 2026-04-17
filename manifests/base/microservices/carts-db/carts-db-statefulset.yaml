@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: carts-db
-  namespace: sock-shop
   labels:
     name: carts-db
+  namespace: sock-shop
 spec:
-  serviceName: "carts-db"
+  serviceName: carts-db
   replicas: 1
   selector:
     matchLabels:
@@ -18,26 +18,26 @@ spec:
     spec:
       containers:
         - name: carts-db
-          image: quay.io/mongodb/mongodb:org-4.4-standalone-ubuntu2204 # MongoDB (unlike SQL) no schema needed upfront!
-          imagePullPolicy: IfNotPresent
+          image: mongo:4.0
           ports:
             - name: mongo
               containerPort: 27017
-          securityContext:
-            readOnlyRootFilesystem: true
           volumeMounts:
-            - name: carts-db-vol
-              mountPath: /data/db
-            - name: carts-db-temp-vol
-              mountPath: /tmp
+            - mountPath: /data/db
+              name: carts-db-data
+            - mountPath: /tmp
+              name: tmp-volume
       volumes:
-        - name: carts-db-temp-vol
-          emptyDir: {}
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        kubernetes.io/os: linux
   volumeClaimTemplates:
     - metadata:
-        name: carts-db-vol
+        name: carts-db-data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: [ "ReadWriteOnce" ]
         storageClassName: ebs-sc
         resources:
           requests:

@@ -16,4 +16,4 @@ spec:
           name: front-end
     ports:
     - protocol: TCP
-      port: 8080
+      port: 80

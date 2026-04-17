@@ -2,52 +2,39 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: user-db
-  namespace: sock-shop
   labels:
-    app: user-db
-
+    name: user-db
+  namespace: sock-shop
 spec:
-  serviceName: "user-db"
   replicas: 1
-
   selector:
     matchLabels:
-      app: user-db
-
+      name: user-db
   template:
     metadata:
       labels:
-        app: user-db
-
+        name: user-db
     spec:
-      securityContext:        # pod-level: correct position
-        fsGroup: 999
-
       containers:
         - name: user-db
-          image: quay.io/powercloud/sock-shop-user-db:latest
-          imagePullPolicy: IfNotPresent
-          securityContext:    # container-level
-            runAsUser: 999
-            readOnlyRootFilesystem: true
+          image: weaveworksdemos/user-db:0.4.0
 
           ports:
             - name: mongo
               containerPort: 27017
-
+              
           volumeMounts:
-            - name: users-db-vol
-              mountPath: /data/db-users
-            - name: users-db-temp-vol
-              mountPath: /tmp
-
+            - mountPath: /data/db
+              name: user-db-data
+            - mountPath: /tmp
+              name: tmp-volume
       volumes:
-        - name: users-db-temp-vol
-          emptyDir: {}
-
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
   volumeClaimTemplates:
     - metadata:
-        name: users-db-vol
+        name: user-db-data
       spec:
         accessModes: ["ReadWriteOnce"]
         storageClassName: ebs-sc

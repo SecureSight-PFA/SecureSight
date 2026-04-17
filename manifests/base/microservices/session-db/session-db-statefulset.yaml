@@ -2,48 +2,44 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: session-db
-  namespace: sock-shop
   labels:
-    app: session-db
+    name: session-db
+  namespace: sock-shop
 spec:
-  serviceName: "session-db"
   replicas: 1
-
   selector:
     matchLabels:
-      app: session-db
-
+      name: session-db
   template:
     metadata:
       labels:
-        app: session-db
-      annotations:
-        prometheus.io/scrape: "false"
-
+        name: session-db
     spec:
-      securityContext:
-        runAsUser: 999   
-        fsGroup: 999
-
       containers:
         - name: session-db
-          image: redis:7-alpine
-          imagePullPolicy: IfNotPresent
+          image: redis:alpine
           ports:
             - name: redis
               containerPort: 6379
-
           securityContext:
             capabilities:
               drop:
-                - ALL
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
             readOnlyRootFilesystem: true
-
+            allowPrivilegeEscalation: false
           volumeMounts:
-            - name: session-db-vol
-              mountPath: /data
-
-      volumes:
-        - name: session-db-vol
-          emptyDir:
-            medium: Memory
+            - mountPath: /data
+              name: session-db-data
+  volumeClaimTemplates:
+    - metadata:
+        name: session-db-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: ebs-sc
+        resources:
+          requests:
+            storage: 1Gi
