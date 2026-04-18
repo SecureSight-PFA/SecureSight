@@ -64,3 +64,12 @@ module "iam_post_eks" {
   oidc_provider_arn = module.eks.oidc_provider_arn
   oidc_issuer_url   = module.eks.oidc_issuer_url
 }
+
+module "lb" {
+  source                  = "../../modules/lb"
+  cluster_name            = var.cluster_name
+  environment             = var.environment
+  alb_controller_role_arn = module.iam_post_eks.alb_controller_role_arn
+  vpc_id                  = module.vpc.vpc_id
+  region                  = var.region
+}

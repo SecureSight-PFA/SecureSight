@@ -19,13 +19,12 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   count = length(var.availability_zones)
 
-  vpc_id                  = var.vpc_id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = var.availability_zones[count.index]
-  map_public_ip_on_launch = true
+  vpc_id            = var.vpc_id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name = "${var.environment}-public-subnet-${var.availability_zones[count.index]}"
+    Name = "${var.environment}-private-subnet-${var.availability_zones[count.index]}"
   }
 }
 

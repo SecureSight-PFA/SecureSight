@@ -1,7 +1,7 @@
 environment        = "prod"
 region             = "us-east-2"
 cluster_name       = "securesight-prod"
-kubernetes_version = "1.29"
+kubernetes_version = "1.3"
 
 vpc_cidr             = "10.1.0.0/16"
 availability_zones   = ["us-east-2a", "us-east-2b"]

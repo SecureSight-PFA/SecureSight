@@ -11,6 +11,10 @@ resource "aws_eks_cluster" "this" {
     endpoint_public_access  = true
   }
 
+  lifecycle {
+    ignore_changes = [version]
+  }
+
   # Enable control plane logging
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 

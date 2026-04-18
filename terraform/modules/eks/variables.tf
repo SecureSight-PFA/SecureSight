@@ -11,7 +11,6 @@ variable "environment" {
 variable "kubernetes_version" {
   description = "Kubernetes version for EKS"
   type        = string
-  default     = "1.29"
 }
 
 variable "eks_cluster_role_arn" {
