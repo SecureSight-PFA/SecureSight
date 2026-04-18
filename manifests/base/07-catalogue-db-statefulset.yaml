@@ -1,6 +1,6 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: catalogue-db
   labels:
@@ -38,9 +38,6 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
             successThreshold: 1
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: catalogue-data
           env:
           - name: MARIADB_ROOT_PASSWORD
             valueFrom:
@@ -49,10 +46,20 @@ spec:
                 name: mongodb-creds
           - name: MARIADB_DATABASE
             value: "socksdb"
+          volumeMounts:
+          - name: catalogue-db-data
+            mountPath: /var/lib/mysql
+          - name: tmp
+            mountPath: /tmp
       volumes:
-        - name: catalogue-data
-          emptyDir:
-            medium: Memory
-      #nodeSelector:
-      #  kubernetes.io/arch: amd64
-      #  node-role.kubernetes.io/worker: ""
+      - name: tmp
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: catalogue-db-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi

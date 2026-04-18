@@ -4,6 +4,7 @@ kind: Kustomization
 resources: 
   - ../../base
 
+
 secretGenerator:
   - name: mongodb-creds
     namespace: sock-shop

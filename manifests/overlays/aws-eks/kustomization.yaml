@@ -3,10 +3,12 @@ kind: Kustomization
 
 resources: 
   - ../../base
-#well later add ebs storageclass and patch storage statefulsets
+  - storageclass-gp3.yaml
 
 patches: 
   - path: ingress-patch.yaml #replace nginx ingress with alb ingress
+  - path: statefulset-storage-patch.yaml
+  - path: netpol-alb-patch.yaml
 
 secretGenerator:
   - name: mongodb-creds

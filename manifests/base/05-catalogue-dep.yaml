@@ -34,8 +34,14 @@ spec:
           imagePullPolicy: IfNotPresent
           command: [ "/opt/app" ]
           args:
-            - -port=8080
-            - -DSN=root:admin@tcp(catalogue-db:3306)/socksdb
+          - -port=8080
+          - -DSN=root:$(MYSQL_ROOT_PASSWORD)@tcp(catalogue-db:3306)/socksdb
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-creds
+                key: MYSQL_ROOT_PASSWORD
           resources:
             limits:
               cpu: 200m
@@ -57,6 +63,3 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 3
-      #nodeSelector:
-      #  node-role.kubernetes.io/worker: ""
-      #na7ina security context for now

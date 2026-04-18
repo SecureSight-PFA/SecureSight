@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: user-db
   labels:
     name: user-db
   namespace: sock-shop
 spec:
+  serviceName: user-db
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: user-db
-          image: quay.io/powercloud/sock-shop-user-db:latest
+          image: weaveworksdemos/user-db:0.4.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: mongo
@@ -45,17 +46,19 @@ spec:
             failureThreshold: 3
             successThreshold: 1
           volumeMounts:
-            - mountPath: /tmp
-              name: users-db-temp-vol
-            - mountPath: /data/db-users
-              name: users-db-vol
+          - name: user-db-data
+            mountPath: /data/db
+          - name: tmp
+            mountPath: /tmp
       volumes:
-        - name: users-db-vol
-          emptyDir:
-            medium: Memory
-        - name: users-db-temp-vol
-          persistentVolumeClaim:
-            claimName: user-db-temp-pvc
-      #nodeSelector:
-      #  node-role.kubernetes.io/worker: ""
-      #  kubernetes.io/arch: amd64
+      - name: tmp
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: user-db-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
