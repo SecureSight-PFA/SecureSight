@@ -8,53 +8,15 @@ sortOptions:
   order: fifo
 
 resources:
-  - 00-sock-shop-ns.yaml
-  - 01-carts-dep.yaml
-  - 02-carts-svc.yaml
-  - 03-carts-db-statefulset.yaml  
-  - 04-carts-db-svc.yaml
-  - 05-catalogue-dep.yaml
-  - 06-catalogue-svc.yaml
-  - 07-catalogue-db-statefulset.yaml
-  - 08-catalogue-db-svc.yaml
-  - 09-front-end-dep.yaml
-  - 10-front-end-svc.yaml
-  - 11-orders-dep.yaml
-  - 12-orders-svc.yaml
-  - 13-orders-db-statefulset.yaml
-  - 14-orders-db-svc.yaml
-  - 15-payment-dep.yaml
-  - 16-payment-svc.yaml
-  - 17-queue-master-dep.yaml
-  - 18-queue-master-svc.yaml
-  - 19-rabbitmq-dep.yaml
-  - 20-rabbitmq-svc.yaml
-  - 21-session-db-dep.yaml
-  - 22-session-db-svc.yaml
-  - 23-shipping-dep.yaml
-  - 24-shipping-svc.yaml
-  - 25-user-dep.yaml
-  - 26-user-svc.yaml
-  - 27-user-db-statefulset.yaml
-  - 28-user-db-svc.yaml
-  - 29-ingress.yaml
-
-  - hpa/frontend-hpa.yaml
-  - hpa/carts-hpa.yaml
-  - hpa/catalogue-hpa.yaml
-  - hpa/orders-hpa.yaml
-  - hpa/payment-hpa.yaml
-  - hpa/shipping-hpa.yaml
-  - hpa/user-hpa.yaml
-
-  - network-policies/00-default-deny.yaml
-  - network-policies/01-allow-dns.yaml
-  - network-policies/02-frontend-policy.yaml
-  - network-policies/03-catalogue-policy.yaml
-  - network-policies/04-carts-policy.yaml
-  - network-policies/05-orders-policy.yaml
-  - network-policies/06-payment-policy.yaml
-  - network-policies/07-user-policy.yaml
-  - network-policies/08-shipping-rabbitmq-policy.yaml
-  - network-policies/09-session-policy.yaml
-
+  - sock-shop-ns.yaml
+  - front-end/
+  - carts/
+  - catalogue/
+  - user/
+  - orders/
+  - payment/
+  - queue-master/
+  - rabbitmq/
+  - session/
+  - shipping/
+  - networking/

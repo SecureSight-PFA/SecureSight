@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: sock-shop
+  namespace: sock-shop
+
+sortOptions:
+  order: fifo
+
+resources:
+  - ingress.yaml
+  - network-policies/00-default-deny.yaml
+  - network-policies/01-allow-dns.yaml
+  - network-policies/02-frontend-policy.yaml
+  - network-policies/03-catalogue-policy.yaml
+  - network-policies/04-carts-policy.yaml
+  - network-policies/05-orders-policy.yaml
+  - network-policies/06-payment-policy.yaml
+  - network-policies/07-user-policy.yaml
+  - network-policies/08-shipping-rabbitmq-policy.yaml
+  - network-policies/09-session-policy.yaml

@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: sock-shop
+  namespace: sock-shop
+
+sortOptions:
+  order: fifo
+
+resources:
+  - user-dep.yaml
+  - user-svc.yaml
+  - user-db-statefulset.yaml
+  - user-db-svc.yaml
+  - user-hpa.yaml
