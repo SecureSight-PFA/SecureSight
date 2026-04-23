@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cni_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_only" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"  # Allows nodes to pull form ECR
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"  # Allows nodes to pull form ECR (aws-node (CNI networking plugin), kube-proxy, sometimes coredns)
   role       = aws_iam_role.nodes.name
 }
 

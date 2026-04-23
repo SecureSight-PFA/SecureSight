@@ -6,4 +6,8 @@ provisioner: ebs.csi.aws.com
 parameters:
   type: gp3
 reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
+
+
+# volumeBindingMode: Immediate means EBS volumes are created before a pod is scheduled, without knowing which AZ the pod will land in. This causes AZ mismatch errors — the volume gets created in us-east-2b but your pod needs to run on us-east-2a

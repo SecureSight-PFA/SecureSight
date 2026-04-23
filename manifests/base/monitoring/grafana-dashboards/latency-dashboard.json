@@ -1,0 +1,214 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Request Latency (p50 / p95 / p99)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"catalogue\"}[5m])) by (le))", "legendFormat": "p50 catalogue", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"catalogue\"}[5m])) by (le))", "legendFormat": "p95 catalogue", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"catalogue\"}[5m])) by (le))", "legendFormat": "p99 catalogue", "refId": "C" }
+      ],
+      "title": "Catalogue — Latency Percentiles",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+      "id": 2,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"user\"}[5m])) by (le))", "legendFormat": "p50 user", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"user\"}[5m])) by (le))", "legendFormat": "p95 user", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"user\"}[5m])) by (le))", "legendFormat": "p99 user", "refId": "C" }
+      ],
+      "title": "User — Latency Percentiles",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
+      "id": 3,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"orders\"}[5m])) by (le))", "legendFormat": "p50 orders", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"orders\"}[5m])) by (le))", "legendFormat": "p95 orders", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"orders\"}[5m])) by (le))", "legendFormat": "p99 orders", "refId": "C" }
+      ],
+      "title": "Orders — Latency Percentiles",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
+      "id": 4,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"front-end\"}[5m])) by (le))", "legendFormat": "p50 frontend", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"front-end\"}[5m])) by (le))", "legendFormat": "p95 frontend", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"front-end\"}[5m])) by (le))", "legendFormat": "p99 frontend", "refId": "C" }
+      ],
+      "title": "Frontend — Latency Percentiles",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 },
+      "id": 101,
+      "title": "Request Rate (RPS)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 18 },
+      "id": 5,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"catalogue\"}[5m]))", "legendFormat": "catalogue", "refId": "A" },
+        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"user\"}[5m]))", "legendFormat": "user", "refId": "B" },
+        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"orders\"}[5m]))", "legendFormat": "orders", "refId": "C" },
+        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"front-end\"}[5m]))", "legendFormat": "frontend", "refId": "D" }
+      ],
+      "title": "Request Rate — All Services",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "id": 102,
+      "title": "Current P99 Latency",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 27 },
+      "id": 10,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"catalogue\"}[5m])) by (le))", "refId": "A" }],
+      "title": "Catalogue p99",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 27 },
+      "id": 11,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"user\"}[5m])) by (le))", "refId": "A" }],
+      "title": "User p99",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 27 },
+      "id": 12,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"orders\"}[5m])) by (le))", "refId": "A" }],
+      "title": "Orders p99",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "red", "value": 1}] } },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 27 },
+      "id": 13,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "histogram_quantile(0.99, sum(rate(request_duration_seconds_bucket{namespace=\"sock-shop\", name=\"front-end\"}[5m])) by (le))", "refId": "A" }],
+      "title": "Frontend p99",
+      "type": "stat"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["sock-shop", "latency"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource",
+        "label": "Datasource"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Sock Shop — Latency",
+  "uid": "sockshop-latency",
+  "version": 1
+}

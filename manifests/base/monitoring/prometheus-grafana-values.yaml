@@ -1,0 +1,192 @@
+# Documentation: https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml
+# & https://dev.to/aws-builders/observability-on-amazon-eks-cluster-a-complete-guide-to-prometheus-and-grafana-with-helm-5d4l
+
+# PROMETHEUS
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      role: monitoring-nodes
+
+    # Tolerations allow Prometheus pods to be scheduled on nodes with specific taints (monitoring-nodes:NoSchedule).
+    tolerations:
+      - key: role
+        operator: Equal
+        value: monitoring-nodes
+        effect: NoSchedule
+
+    retention: 10d
+    retentionSize: "5GB"
+
+    resources:
+      requests:
+        cpu: 300m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ebs-sc-monitoring
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 5Gi
+
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+# ALERTMANAGER
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      role: monitoring-nodes
+
+    tolerations:
+      - key: role
+        operator: Equal
+        value: monitoring-nodes
+        effect: NoSchedule
+
+    retention: 120h
+
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ebs-sc-monitoring
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 5Gi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+# GRAFANA
+grafana:
+  enabled: true
+
+  nodeSelector:
+    role: monitoring-nodes
+
+  tolerations:
+    - key: role
+      operator: Equal
+      value: monitoring-nodes
+      effect: NoSchedule
+
+  admin:
+    existingSecret: grafana-admin-secret
+    userKey: admin-user
+    passwordKey: admin-password
+    # For future reference about secrets: https://chatgpt.com/c/69e94467-862c-83ea-8e92-fa77da33f3f0
+
+  persistence:
+    enabled: true
+    storageClassName: ebs-sc-monitoring
+    size: 5Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Pre-load the Kubernetes dashboards
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: utc
+
+# NODE EXPORTER
+nodeExporter:
+  enabled: true
+  tolerations:
+    - operator: Exists # Allow scheduling on any node, including tainted ones (monitoring-nodes:NoSchedule)
+
+# KUBE STATE METRICS
+kubeStateMetrics:
+  enabled: true
+  nodeSelector:
+    role: monitoring-nodes
+
+  tolerations:
+    - key: role
+      operator: Equal
+      value: monitoring-nodes
+      effect: NoSchedule
+
+# PROMETHEUS OPERATOR
+prometheusOperator:
+  nodeSelector:
+    role: monitoring-nodes
+
+  tolerations:
+    - key: role
+      operator: Equal
+      value: monitoring-nodes
+      effect: NoSchedule
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+# ──────────────────────────────────────────────
+# DESIGN NOTE (BEST PRACTICE)
+# ──────────────────────────────────────────────
+# Monitoring components (Prometheus, Grafana, Alertmanager) are isolated in a
+# dedicated node group to avoid resource contention with application workloads.
+#
+# This separation improves:
+# - Stability: monitoring remains reliable even under high app load
+# - Performance: prevents CPU/memory starvation between apps and observability tools
+# - Scalability: monitoring can scale independently of application workloads
+# - Fault isolation: issues in app nodes do not impact observability stack
+#
+# This follows common production Kubernetes best practices for observability architecture.
+# ──────────────────────────────────────────────
+
+
+# helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --create-namespace -f prometheus-grafana-values.yaml
+# helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring -f prometheus-grafana-values.yaml
+
+
+
+#                      Pod                         |            What it is
+# -------------------------------------------------|-------------------------------------------
+# kube-prometheus-stack-prometheus-*               | Prometheus server
+# kube-prometheus-stack-alertmanager-*             | Alertmanager
+# kube-prometheus-stack-grafana-*                  | Grafana
+# kube-prometheus-stack-operator-*                 | Prometheus Operator
+# kube-prometheus-stack-kube-state-metrics-*       | Kube-state-metrics
+# kube-prometheus-stack-prometheus-node-exporter-* | Node exporter (one per node)
+
+# Useful:
+
+# Prometheus UI → http://localhost:9090 (PromQL query editor) / http://localhost:9090/targets (All scrape targets + UP/DOWN status)
+# kubectl port-forward svc/kube-prometheus-stack-prometheus -n monitoring 9090:9090
+
+# Grafana UI → http://localhost:3000
+# Login: admin / admin
+# kubectl port-forward svc/kube-prometheus-stack-grafana -n monitoring 3000:80
+
+# Alertmanager UI → http://localhost:9093
+# kubectl port-forward svc/kube-prometheus-stack-alertmanager -n monitoring 9093:9093
+
+
+# Taint the Monitoring Node :
+# kubectl taint node ip-10-0-3-27.us-east-2.compute.internal role=monitoring-nodes:NoSchedule (see terrafrom modules/nodes)
+# This means: "no pod can schedule here unless it explicitly tolerates this taint."
+
+# ! Our microservice needs to expose a /metrics endpoint in Prometheus format. If it doesn't yet, you'll need a client library (e.g., prom-client for Node.js, prometheus_client for Python, Micrometer for Java).

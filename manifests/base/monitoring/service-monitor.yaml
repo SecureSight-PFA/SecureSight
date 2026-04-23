@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sock-shop-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - sock-shop
+  selector:
+    matchLabels:
+      monitor: "true"
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      fallbackScrapeProtocol: PrometheusText0.0.4
+    # Some services (e.g. queue-master, carts) return Content-Type: application/json
+    # instead of text/plain, causing Prometheus to reject the scrape.
+    # This tells Prometheus to fall back to parsing the response as standard
+    # Prometheus text format regardless of the Content-Type header.
