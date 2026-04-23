@@ -1,0 +1,108 @@
+---
+# ConfigMap: json_exporter config for Spring Boot 1.x services (carts, queue-master)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: json-exporter-config
+  namespace: sock-shop
+data:
+  config.yml: |
+    modules:
+      default:
+        metrics:
+          - name: jvm_memory_bytes
+            type: gauge
+            help: JVM memory in KB
+            path: '{ .mem }'
+            labels:
+              type: total
+          - name: jvm_memory_free_bytes
+            type: gauge
+            help: JVM free memory in KB
+            path: '{ .mem\.free }'
+          - name: jvm_heap_used_bytes
+            type: gauge
+            help: JVM heap used in KB
+            path: '{ .heap\.used }'
+          - name: jvm_heap_committed_bytes
+            type: gauge
+            help: JVM heap committed in KB
+            path: '{ .heap\.committed }'
+          - name: jvm_nonheap_used_bytes
+            type: gauge
+            help: JVM non-heap used in KB
+            path: '{ .nonheap\.used }'
+          - name: jvm_threads
+            type: gauge
+            help: JVM thread count
+            path: '{ .threads }'
+          - name: jvm_threads_daemon
+            type: gauge
+            help: JVM daemon thread count
+            path: '{ .threads\.daemon }'
+          - name: jvm_classes_loaded
+            type: gauge
+            help: JVM loaded classes count
+            path: '{ .classes\.loaded }'
+          - name: system_load_average
+            type: gauge
+            help: System load average
+            path: '{ .systemload\.average }'
+          - name: http_sessions_active
+            type: gauge
+            help: Active HTTP sessions
+            path: '{ .httpsessions\.active }'
+          - name: instance_uptime_ms
+            type: counter
+            help: Instance uptime in milliseconds
+            path: '{ .instance\.uptime }'
+---
+# Deployment: json_exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: json-exporter
+  namespace: sock-shop
+  labels:
+    app: json-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: json-exporter
+  template:
+    metadata:
+      labels:
+        app: json-exporter
+    spec:
+      containers:
+        - name: json-exporter
+          image: prometheuscommunity/json-exporter:latest
+          args:
+            - --config.file=/etc/json-exporter/config.yml
+          ports:
+            - containerPort: 7979
+          volumeMounts:
+            - name: config
+              mountPath: /etc/json-exporter
+      volumes:
+        - name: config
+          configMap:
+            name: json-exporter-config
+---
+# Service: json_exporter
+apiVersion: v1
+kind: Service
+metadata:
+  name: json-exporter
+  namespace: sock-shop
+  labels:
+    app: json-exporter
+    monitor: "true"
+spec:
+  selector:
+    app: json-exporter
+  ports:
+    - name: http
+      port: 7979
+      targetPort: 7979

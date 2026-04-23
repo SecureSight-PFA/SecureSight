@@ -1,184 +1,91 @@
 {
-  "__inputs": [],
-  "__requires": [],
-  "annotations": { "list": [] },
-  "editable": true,
-  "graphTooltip": 1,
-  "id": null,
-  "links": [],
+  "title": "Sock Shop — Errors & Restarts (App Only)",
+  "uid": "sockshop-errors-restarts-clean",
+  "schemaVersion": 38,
+  "version": 3,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
   "panels": [
     {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
-      "id": 100,
-      "title": "Pod Restarts",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10, "drawStyle": "bars" },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
-      "id": 1,
-      "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "targets": [
-        { "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"catalogue\"}[1h])", "legendFormat": "catalogue", "refId": "A" },
-        { "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"user\"}[1h])", "legendFormat": "user", "refId": "B" },
-        { "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"orders\"}[1h])", "legendFormat": "orders", "refId": "C" },
-        { "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"front-end\"}[1h])", "legendFormat": "frontend", "refId": "D" }
-      ],
+      "type": "timeseries",
       "title": "Container Restarts (per hour)",
-      "type": "timeseries"
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [
+        {
+          "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\"}[1h])) by (container)",
+          "legendFormat": "{{container}}"
+        }
+      ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 3}] } },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
-      "id": 2,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "orientation": "horizontal" },
-      "targets": [
-        { "expr": "kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"catalogue\"}", "legendFormat": "catalogue", "refId": "A" },
-        { "expr": "kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"user\"}", "legendFormat": "user", "refId": "B" },
-        { "expr": "kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"orders\"}", "legendFormat": "orders", "refId": "C" },
-        { "expr": "kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=\"front-end\"}", "legendFormat": "frontend", "refId": "D" }
-      ],
+      "type": "stat",
       "title": "Total Restarts (lifetime)",
-      "type": "stat"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
-      "id": 101,
-      "title": "HTTP Errors",
-      "type": "row"
-    },
-    {
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
-          "unit": "reqps"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
-      "id": 3,
-      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"catalogue\", status_code=~\"5..\"}[5m]))", "legendFormat": "catalogue 5xx", "refId": "A" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"user\", status_code=~\"5..\"}[5m]))", "legendFormat": "user 5xx", "refId": "B" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"orders\", status_code=~\"5..\"}[5m]))", "legendFormat": "orders 5xx", "refId": "C" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"front-end\", status_code=~\"5..\"}[5m]))", "legendFormat": "frontend 5xx", "refId": "D" }
-      ],
-      "title": "HTTP 5xx Error Rate",
-      "type": "timeseries"
+        {
+          "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"sock-shop\", container=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\"}) by (container)",
+          "legendFormat": "{{container}}"
+        }
+      ]
     },
     {
+      "type": "timeseries",
+      "title": "HTTP 5xx Error Rate (RPS)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
-      "id": 4,
-      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"catalogue\", status_code=~\"5..\"}[5m])) / sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"catalogue\"}[5m]))", "legendFormat": "catalogue", "refId": "A" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"user\", status_code=~\"5..\"}[5m])) / sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"user\"}[5m]))", "legendFormat": "user", "refId": "B" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"orders\", status_code=~\"5..\"}[5m])) / sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"orders\"}[5m]))", "legendFormat": "orders", "refId": "C" },
-        { "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"front-end\", status_code=~\"5..\"}[5m])) / sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=\"front-end\"}[5m]))", "legendFormat": "frontend", "refId": "D" }
-      ],
+        {
+          "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\", status_code=~\"5..\"}[5m])) by (name)",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
       "title": "Error Rate % (5xx / total)",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
-      "id": 102,
-      "title": "Pod Status",
-      "type": "row"
-    },
-    {
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 19 },
-      "id": 5,
-      "options": { "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "kube_pod_status_phase{namespace=\"sock-shop\", phase=\"Running\", pod=~\"catalogue.*\"}", "legendFormat": "catalogue running", "refId": "A" },
-        { "expr": "kube_pod_status_phase{namespace=\"sock-shop\", phase=\"Running\", pod=~\"user.*\"}", "legendFormat": "user running", "refId": "B" },
-        { "expr": "kube_pod_status_phase{namespace=\"sock-shop\", phase=\"Running\", pod=~\"orders.*\"}", "legendFormat": "orders running", "refId": "C" },
-        { "expr": "kube_pod_status_phase{namespace=\"sock-shop\", phase=\"Running\", pod=~\"front-end.*\"}", "legendFormat": "frontend running", "refId": "D" }
-      ],
-      "title": "Running Pods Count",
-      "type": "timeseries"
+        {
+          "expr": "sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\", status_code=~\"5..\"}[5m])) by (name) / sum(rate(request_duration_seconds_count{namespace=\"sock-shop\", name=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\"}[5m])) by (name)",
+          "legendFormat": "{{name}}"
+        }
+      ]
     },
     {
+      "type": "timeseries",
+      "title": "Running Pods Count (per service)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
-      "id": 6,
-      "options": { "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "kube_pod_container_status_waiting_reason{namespace=\"sock-shop\", container=\"catalogue\"}", "legendFormat": "catalogue - {{reason}}", "refId": "A" },
-        { "expr": "kube_pod_container_status_waiting_reason{namespace=\"sock-shop\", container=\"user\"}", "legendFormat": "user - {{reason}}", "refId": "B" },
-        { "expr": "kube_pod_container_status_waiting_reason{namespace=\"sock-shop\", container=\"orders\"}", "legendFormat": "orders - {{reason}}", "refId": "C" },
-        { "expr": "kube_pod_container_status_waiting_reason{namespace=\"sock-shop\", container=\"front-end\"}", "legendFormat": "frontend - {{reason}}", "refId": "D" }
-      ],
-      "title": "Containers in Waiting State (CrashLoopBackOff etc.)",
-      "type": "timeseries"
+        {
+          "expr": "sum(kube_pod_status_phase{namespace=\"sock-shop\", phase=\"Running\", pod=~\"carts.*|catalogue.*|orders.*|front-end.*|user.*|payment.*|shipping.*|queue-master.*\"}) by (pod)",
+          "legendFormat": "{{pod}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Containers Waiting (CrashLoopBackOff etc.)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 38 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "targets": [
+        {
+          "expr": "sum(kube_pod_container_status_waiting_reason{namespace=\"sock-shop\", container=~\"carts|catalogue|orders|front-end|user|payment|shipping|queue-master\"}) by (container, reason)",
+          "legendFormat": "{{container}} - {{reason}}"
+        }
+      ]
     }
   ],
-  "refresh": "30s",
-  "schemaVersion": 38,
-  "tags": ["sock-shop", "errors", "restarts"],
   "templating": {
     "list": [
       {
-        "current": {},
-        "hide": 0,
-        "includeAll": false,
         "name": "datasource",
-        "options": [],
-        "query": "prometheus",
-        "refresh": 1,
         "type": "datasource",
-        "label": "Datasource"
+        "query": "prometheus"
       }
     ]
-  },
-  "time": { "from": "now-1h", "to": "now" },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "Sock Shop — Errors & Restarts",
-  "uid": "sockshop-errors-restarts",
-  "version": 1
+  }
 }
