@@ -35,9 +35,11 @@ module "sg" {
 }
 
 module "iam" {
-  source       = "../../modules/iam"
-  environment  = var.environment
-  tags         = var.tags
+  source              = "../../modules/iam"
+  environment         = var.environment
+  oidc_provider_arn   = module.eks.oidc_provider_arn
+  oidc_provider_url   = module.eks.oidc_provider_url
+  tags                = var.tags
 }
 
 module "eks" {
