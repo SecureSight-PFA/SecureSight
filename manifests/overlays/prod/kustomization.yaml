@@ -5,5 +5,11 @@ metadata:
   namespace: sock-shop
 
 resources:
-  - ../../base
+  - ../dev
+  - ./storageclass.yaml
   - ./external-secrets/
+  - ./ingress/
+
+patchesStrategicMerge:
+  - ./patches/statefulsets-patches.yaml
+  - ./patches/services-patches.yaml
