@@ -14,19 +14,23 @@ spec:
       labels:
         name: carts-db
     spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
       containers:
         - name: carts-db
           image: quay.io/mongodb/mongodb:org-4.4-standalone-ubuntu2204
           ports:
             - containerPort: 27017
               name: mongo
+          
+          securityContext:
+            readOnlyRootFilesystem: false
 
           envFrom:
             - secretRef:
                 name: carts-db-secret
-
-          securityContext:
-            readOnlyRootFilesystem: true
 
           volumeMounts:
             - name: carts-db-temp-vol

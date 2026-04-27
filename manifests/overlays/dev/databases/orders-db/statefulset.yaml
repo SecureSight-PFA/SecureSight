@@ -23,14 +23,18 @@ spec:
           ports:
             - name: mongo
               containerPort: 27017
-              
           securityContext:
             readOnlyRootFilesystem: false
+              
           volumeMounts:
             - mountPath: /tmp
               name: orders-db-temp-vol
             - mountPath: /data/db
               name: orders-db-data # the durable data volume
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
 
       nodeSelector:
         node-role.kubernetes.io/worker: ""
