@@ -31,20 +31,23 @@ spec:
           volumeMounts:
             - name: carts-db-temp-vol
               mountPath: /tmp 
-
             - name: mongo-storage   
               mountPath: /data/db
-
-      volumes:
-        - name: carts-db-temp-vol
-          persistentVolumeClaim:
-            claimName: carts-db-temp-pvc
 
       nodeSelector:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
 
   volumeClaimTemplates: 
+    - metadata:
+        name: carts-db-temp-vol
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: standard
     - metadata:
         name: mongo-storage
       spec:

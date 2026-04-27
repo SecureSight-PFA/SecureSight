@@ -11,5 +11,4 @@ commonLabels:
 
 resources:
   - statefulset.yaml
-  - 03-carts-db-temp-pvc.yaml
   - 04-carts-db-svc.yaml

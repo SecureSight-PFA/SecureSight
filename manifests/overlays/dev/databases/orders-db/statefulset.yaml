@@ -25,22 +25,28 @@ spec:
               containerPort: 27017
               
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
           volumeMounts:
             - mountPath: /tmp
               name: orders-db-temp-vol
             - mountPath: /data/db
               name: orders-db-data # the durable data volume
-      volumes:
-        - name: orders-db-temp-vol
-          persistentVolumeClaim:
-            claimName: orders-db-temp-pvc
 
       nodeSelector:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
 
   volumeClaimTemplates:
+    - metadata:
+        name: orders-db-temp-vol
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: standard
+
     - metadata:
         name: orders-db-data
       spec:

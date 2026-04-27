@@ -21,7 +21,8 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: quay.io/powercloud/rabbitmq:latest
+          #image: quay.io/powercloud/rabbitmq:latest
+          image: rabbitmq:3.12-management
           imagePullPolicy: IfNotPresent
           command: ["/usr/bin/bash"]
           args: ["/usr/local/bin/docker-entrypoint.sh", "rabbitmq-server"]
@@ -33,9 +34,10 @@ spec:
         
           envFrom:
           - secretRef:
-              name: carts-db-secret
+              name: rabbitmq-secret
               
           securityContext:
+            runAsUser: 0
             readOnlyRootFilesystem: false
 
           volumeMounts:

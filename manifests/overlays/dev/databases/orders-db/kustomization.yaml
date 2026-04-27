@@ -11,5 +11,4 @@ commonLabels:
 
 resources:
   - statefulset.yaml
-  - 13-orders-db-temp-pvc.yaml
   - 14-orders-db-svc.yaml

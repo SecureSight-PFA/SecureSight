@@ -17,7 +17,7 @@ spec:
           requests:
             storage: 2Gi
     - metadata:
-        name: carts-db-vol
+        name: mongo-storage
       spec:
         storageClassName: gp3
         accessModes:
@@ -64,7 +64,7 @@ spec:
           requests:
             storage: 2Gi
     - metadata:
-        name: orders-db-vol
+        name: orders-db-data
       spec:
         storageClassName: gp3
         accessModes:
@@ -121,7 +121,7 @@ metadata:
 spec:
   volumeClaimTemplates:
     - metadata:
-        name: users-db-temp-vol
+        name: user-db-temp-pvc
       spec:
         storageClassName: gp3
         accessModes:

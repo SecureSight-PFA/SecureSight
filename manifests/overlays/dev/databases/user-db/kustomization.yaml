@@ -11,5 +11,4 @@ commonLabels:
 
 resources:
   - statefulset.yaml
-  - 27-user-db-temp-pvc.yaml
   - 28-user-db-svc.yaml

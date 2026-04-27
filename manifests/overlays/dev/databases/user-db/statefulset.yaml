@@ -24,26 +24,34 @@ spec:
               containerPort: 27017
 
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
           volumeMounts:
             - mountPath: /tmp
-              name: users-db-temp-vol
+              name: user-db-temp-pvc
             - mountPath: /data/db-users
-              name: users-db-data
-      volumes:
-        - name: users-db-temp-vol
-          persistentVolumeClaim:
-            claimName: user-db-temp-pvc
+              name: users-db-vol
+      securityContext:
+        fsGroup: 999  # mongodb group
       nodeSelector:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
 
   volumeClaimTemplates:
     - metadata:
-        name: users-db-data
+        name: user-db-temp-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: standard
+    - metadata:
+        name: users-db-vol
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
             storage: 10Gi
         storageClassName: standard
+
