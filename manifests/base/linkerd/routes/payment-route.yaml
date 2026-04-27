@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: payment-route
+  namespace: sock-shop
+  # No retry annotations (payment never retries)
+spec:
+  parentRefs:
+    - name: payment
+      kind: Service
+      port: 80
+  rules:
+    # POST /paymentAuth - process payment
+    - matches:
+        - path:
+            type: Exact
+            value: /paymentAuth
+          method: POST
+      timeouts:
+        request: 10s

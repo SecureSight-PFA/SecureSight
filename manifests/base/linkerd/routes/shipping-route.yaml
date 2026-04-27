@@ -1,0 +1,43 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: shipping-read-route
+  namespace: sock-shop
+  annotations:
+    retry.linkerd.io/http: "5xx,reset"
+    retry.linkerd.io/limit: "2"
+    retry.linkerd.io/timeout: "300ms"
+spec:
+  parentRefs:
+    - name: shipping
+      kind: Service
+      port: 80
+  rules:
+    # GET /shipping/{id} - track shipment (safe to retry)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: /shipping/[^/]+
+          method: GET
+      timeouts:
+        request: 5s
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: shipping-write-route
+  namespace: sock-shop
+spec:
+  parentRefs:
+    - name: shipping
+      kind: Service
+      port: 80
+  rules:
+    # POST /shipping - create shipment (NOT safe to retry)
+    - matches:
+        - path:
+            type: Exact
+            value: /shipping
+          method: POST    
+      timeouts:
+        request: 10s

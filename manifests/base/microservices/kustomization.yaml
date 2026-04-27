@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: sock-shop
 
 resources:
+  - namespace.yaml
   - carts/
   - catalogue/
   - payment/

@@ -1,5 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+namespace: sock-shop
 
-namespace: linkerd
+resources:
+  - routes/carts-route.yaml
+  - routes/catalogue-route.yaml
+  - routes/front-end-route.yaml
+  - routes/orders-route.yaml
+  - routes/payment-route.yaml
+  - routes/shipping-route.yaml
+  - routes/user-route.yaml 

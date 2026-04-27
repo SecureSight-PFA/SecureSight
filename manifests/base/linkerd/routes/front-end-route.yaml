@@ -1,0 +1,59 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: front-end-read-route
+  namespace: sock-shop
+  annotations:
+    retry.linkerd.io/http: "5xx,reset"
+    retry.linkerd.io/limit: "2"
+spec:
+  parentRefs:
+    - name: front-end
+      kind: Service
+      port: 80
+  rules:
+    # GET / - homepage
+    - matches:
+        - path:
+            type: Exact
+            value: /
+          method: GET
+    
+    # GET /catalogue - product listing
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /catalogue
+          method: GET
+      timeouts:
+        request: 5s
+    
+    # GET /cart - shopping cart view
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /cart
+          method: GET
+      timeouts:
+        request: 5s
+    
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: front-end-write-route
+  namespace: sock-shop
+spec:
+  parentRefs:
+    - name: front-end
+      kind: Service
+      port: 80
+  rules:
+    # POST /orders - checkout (NOT safe to retry)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /orders
+          method: POST
+      timeouts:
+        request: 10s

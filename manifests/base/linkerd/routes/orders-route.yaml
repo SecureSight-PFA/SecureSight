@@ -1,0 +1,43 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: orders-read-route
+  namespace: sock-shop
+  annotations:
+    retry.linkerd.io/http: "5xx,reset"
+    retry.linkerd.io/limit: "3"
+    retry.linkerd.io/timeout: "300ms"
+spec:
+  parentRefs:
+    - name: orders
+      kind: Service
+      port: 80
+  rules:
+    # GET /orders - view order history (safe to retry)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /orders
+          method: GET
+      timeouts:
+        request: 5s
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: orders-write-route
+  namespace: sock-shop
+spec:
+  parentRefs:
+    - name: orders
+      kind: Service
+      port: 80
+  rules:    
+    # POST /orders - create order (NOT safe to retry)
+    - matches:
+        - path:
+            type: Exact
+            value: /orders
+          method: POST
+      timeouts:
+        request: 10s

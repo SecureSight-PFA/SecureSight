@@ -1,0 +1,53 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: carts-read-route
+  namespace: sock-shop
+  annotations:
+    retry.linkerd.io/http: "5xx,reset"
+    retry.linkerd.io/limit: "2"
+    retry.linkerd.io/timeout: "200ms"
+spec:
+  parentRefs:
+    - name: carts
+      kind: Service
+      port: 80
+  rules:
+    # GET - view cart (safe to retry)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: /carts/[^/]+
+          method: GET
+      timeouts:
+        request: 3s
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: carts-write-route
+  namespace: sock-shop
+spec:
+  parentRefs:
+    - name: carts
+      kind: Service
+      port: 80
+  rules:    
+    # POST - add item to cart (NOT safe to retry)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: /carts/[^/]+/items
+          method: POST   
+      timeouts:
+        request: 5s
+    
+    # DELETE - clear cart (NOT safe to retry)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: /carts/[^/]+
+          method: DELETE   
+      timeouts:
+        request: 3s

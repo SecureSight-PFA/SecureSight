@@ -1,0 +1,52 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: user-route
+  namespace: sock-shop
+  annotations:
+    retry.linkerd.io/http: "5xx,reset"
+    retry.linkerd.io/limit: "2"
+    retry.linkerd.io/timeout: "200ms"
+spec:
+  parentRefs:
+    - name: user
+      kind: Service
+      port: 80
+  rules:
+    # GET /login - login page (safe to retry)
+    - matches:
+        - path:
+            type: Exact
+            value: /login
+          method: GET
+      timeouts:
+        request: 5s
+    
+    # GET /customers/{id} - customer profile (safe to retry)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: /customers/[^/]+
+          method: GET
+      timeouts:
+        request: 3s
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: user-write-route
+  namespace: sock-shop
+spec:
+  parentRefs:
+    - name: user
+      kind: Service
+      port: 80
+  rules:
+    # POST /register - create account (NOT safe to retry)
+    - matches:
+        - path:
+            type: Exact
+            value: /register
+          method: POST   
+      timeouts:
+        request: 5s
