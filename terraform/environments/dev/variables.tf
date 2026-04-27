@@ -42,6 +42,12 @@ variable "private_subnet_cidrs" {
 
 # EKS vars
 
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+  default = "eks-dev"
+}
+
 variable "kubernetes_version" {
   description = "Kubernetes version to run on EKS"
   type        = string

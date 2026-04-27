@@ -8,6 +8,8 @@ resource "aws_subnet" "public" {
  
   tags = merge({
     Name = "public-subnet-${count.index}-${var.environment}"
+    "kubernetes.io/role/elb"                    = "1"               
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }, var.tags)
 }
 
@@ -20,6 +22,8 @@ resource "aws_subnet" "private" {
 
   tags = merge({
     Name = "private-subnet-${count.index}-${var.environment}"
+    "kubernetes.io/role/internal-elb"           = "1"                  # ← ADD (for internal ALBs)
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"  
   }, var.tags)
 }
 

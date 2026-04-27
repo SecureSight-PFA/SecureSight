@@ -33,3 +33,7 @@ variable "private_subnet_cidrs" {
   default     = ["10.0.10.0/24", "10.0.11.0/24"]
 }
 
+variable "cluster_name" {
+  description = "EKS cluster name for subnet discovery tags"
+  type        = string
+}
