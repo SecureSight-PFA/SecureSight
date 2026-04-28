@@ -14,6 +14,9 @@ spec:
     metadata:
       labels:
         name: session-db
+      # This tells Linkerd to let MongoDB traffic pass through without intercepting it
+      annotations:
+        config.linkerd.io/skip-outbound-ports: "6379"
     spec:
       containers:
         - name: session-db

@@ -15,7 +15,8 @@ spec:
       labels:
         name: rabbitmq
       annotations:
-        prometheus.io/scrape: "false"
+      # This tells Linkerd to let MongoDB traffic pass through without intercepting it
+        config.linkerd.io/skip-outbound-ports: "5672"
     spec:
       containers:
         - name: rabbitmq

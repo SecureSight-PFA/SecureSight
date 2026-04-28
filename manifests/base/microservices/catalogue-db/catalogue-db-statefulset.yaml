@@ -15,6 +15,9 @@ spec:
     metadata:
       labels:
         name: catalogue-db
+      # This tells Linkerd to let MongoDB traffic pass through without intercepting it
+      annotations:
+        config.linkerd.io/skip-outbound-ports: "3306"
     spec:
       serviceAccountName: db-sa
       securityContext:

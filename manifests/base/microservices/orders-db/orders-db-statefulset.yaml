@@ -16,6 +16,9 @@ spec:
     metadata:
       labels:
         name: orders-db
+      # This tells Linkerd to let MongoDB traffic pass through without intercepting it
+      annotations:
+        config.linkerd.io/skip-outbound-ports: "27017"
 
     spec:
       securityContext:
