@@ -98,6 +98,8 @@ metadata:
   namespace: sock-shop
   labels:
     app: json-exporter
+  annotations:
+    linkerd.io/inject: "disabled"
     monitor: "true"
 spec:
   selector:

@@ -11,7 +11,7 @@ spec:
       - sock-shop
   selector:
     matchLabels:
-      monitor: "true"
+      monitor: "true"  ### in each service
   endpoints:
     - port: http
       path: /metrics

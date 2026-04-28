@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: linkerd-data-plane
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    matchExpressions:
+      - key: linkerd.io/control-plane-ns
+        operator: Exists
+  podMetricsEndpoints:
+    - port: linkerd-admin
+      path: /metrics
+      interval: 15s
+      relabelings:
+        - sourceLabels: [ __meta_kubernetes_pod_container_name ]
+          regex: linkerd-proxy
+          action: keep # only scrape the linkerd-proxy container, not app containers
+
+# This scrapes port 4191 (linkerd-admin) on every pod that has the linkerd.io/control-plane-ns label 
+# which is every Linkerd-injected pod. It collects the Linkerd proxy metrics directly from each sidecar. 
+# This creates job="monitoring/linkerd-data-plane".

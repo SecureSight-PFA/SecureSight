@@ -1,0 +1,45 @@
+
+# =============================================================================
+# CARTS & QUEUE-MASTER MONITORING — KNOWN ISSUE & WORKAROUND
+# =============================================================================
+#
+# PROBLEM:
+#   The `carts` and `queue-master` services are built on Spring Boot 1.x which
+#   exposes metrics at /metrics in raw JSON format (e.g. {"mem": 206736, ...})
+#   instead of the standard Prometheus text format (# HELP / # TYPE).
+#   Prometheus cannot parse JSON metrics and rejects them with:
+#   "expected equal, got ':' while parsing: {\"mem\":"
+#
+# SOLUTION:
+#   We deploy a `json-exporter` sidecar that acts as a translation proxy:
+#
+#     Prometheus → json-exporter:7979/probe?target=carts/metrics
+#                        ↓
+#                  fetches carts JSON
+#                        ↓
+#             converts to Prometheus text format
+#                        ↓
+#           Prometheus stores the metrics 
+#
+# FILES:
+#
+#   json-exporter.yaml
+#     - Deploys the `prometheuscommunity/json-exporter` container in sock-shop
+#     - Includes a ConfigMap defining which JSON fields to extract and expose
+#       as Prometheus gauges/counters (e.g. mem, heap.used, threads, gc counts)
+#     - Exposes port 7979 via a Kubernetes Service
+#
+#   additional-scrape-configs.yaml
+#     - A raw Prometheus scrape config (NOT a Kubernetes manifest)
+#     - Stored as a Kubernetes Secret in the monitoring namespace and referenced
+#       by the Prometheus CR via `spec.additionalScrapeConfigs`
+#     - Tells Prometheus to scrape carts and queue-master by routing requests
+#       through the json-exporter using metrics_path: /probe
+#     - Uses relabel_configs to set the correct `instance` label so targets
+#       are identifiable in the Prometheus UI
+#
+# NOTE:
+#   The other sock-shop services (catalogue, user, orders, frontend, etc.)
+#   expose proper Prometheus text format and are monitored normally via the
+#   ServiceMonitor in service-monitor.yaml.
+# =============================================================================

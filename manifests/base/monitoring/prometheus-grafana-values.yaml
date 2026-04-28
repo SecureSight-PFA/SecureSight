@@ -185,6 +185,9 @@ prometheusOperator:
 # kubectl port-forward svc/kube-prometheus-stack-alertmanager -n monitoring 9093:9093
 
 
+# http://localhost:9091
+# kubectl port-forward svc/prometheus -n linkerd-viz 9091:9090
+
 # Taint the Monitoring Node :
 # kubectl taint node ip-10-0-3-27.us-east-2.compute.internal role=monitoring-nodes:NoSchedule (see terrafrom modules/nodes)
 # This means: "no pod can schedule here unless it explicitly tolerates this taint."
