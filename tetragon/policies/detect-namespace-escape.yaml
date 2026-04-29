@@ -1,0 +1,14 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-namespace-escape
+spec:
+  kprobes:
+    - call: "sys_unshare"
+      syscall: true
+      args:
+        - index: 0
+          type: "int"
+      selectors:
+        - matchActions:
+            - action: Post

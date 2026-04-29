@@ -1,21 +1,21 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: detect-k8s-token-access
+  name: detect-dns-exfiltration
 spec:
   kprobes:
-    - call: "fd_install"
+    - call: "udp_sendmsg"
       syscall: false
       args:
         - index: 0
+          type: "sock"
+        - index: 2
           type: "int"
-        - index: 1
-          type: "file"
       selectors:
         - matchArgs:
-            - index: 1
-              operator: "Prefix"
+            - index: 0
+              operator: "DPort"
               values:
-                - "/var/run/secrets/kubernetes.io/serviceaccount"
+                - "53"
           matchActions:
             - action: Post

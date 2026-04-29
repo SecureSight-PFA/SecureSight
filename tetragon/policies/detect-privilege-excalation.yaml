@@ -1,21 +1,23 @@
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
-  name: detect-k8s-token-access
+  name: detect-privilege-escalation
 spec:
   kprobes:
-    - call: "fd_install"
+    - call: "__sys_setresuid"
       syscall: false
       args:
         - index: 0
           type: "int"
         - index: 1
-          type: "file"
+          type: "int"
+        - index: 2
+          type: "int"
       selectors:
         - matchArgs:
             - index: 1
-              operator: "Prefix"
+              operator: "Equal"
               values:
-                - "/var/run/secrets/kubernetes.io/serviceaccount"
+                - "0"
           matchActions:
             - action: Post
