@@ -1,0 +1,404 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+
+    {
+      "type": "row",
+      "title": "HPA Replica Tracking",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Current vs Desired Replicas",
+      "description": "Overlay current, desired, min, and max replicas to see HPA decisions in real time as K6 ramps load.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 1 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 4 } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "max replicas" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "min replicas" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "current — {{horizontalpodautoscaler}}",
+          "refId": "A"
+        },
+        {
+          "expr": "kube_horizontalpodautoscaler_status_desired_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "desired — {{horizontalpodautoscaler}}",
+          "refId": "B"
+        },
+        {
+          "expr": "kube_horizontalpodautoscaler_spec_min_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "min replicas",
+          "refId": "C"
+        },
+        {
+          "expr": "kube_horizontalpodautoscaler_spec_max_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "max replicas",
+          "refId": "D"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "HPA Min / Max Bounds",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "HPA Min Replicas",
+      "description": "Configured minimum replicas for each HPA.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "expr": "kube_horizontalpodautoscaler_spec_min_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "{{horizontalpodautoscaler}}",
+          "refId": "A",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "HPA Max Replicas",
+      "description": "Configured maximum replicas — alert when current == max during load tests.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "expr": "kube_horizontalpodautoscaler_spec_max_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "{{horizontalpodautoscaler}}",
+          "refId": "A",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Ceiling Hit? (current == max)",
+      "description": "1 = HPA is at max replicas and cannot scale further. Cluster autoscaler may need to add nodes.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "No", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "YES — AT MAX", "color": "red", "index": 1 } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background"
+      },
+"targets": [
+  {
+    "expr": "clamp_max(kube_horizontalpodautoscaler_status_current_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"} == kube_horizontalpodautoscaler_spec_max_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}, 1) or (kube_horizontalpodautoscaler_status_current_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"} * 0)",
+    "legendFormat": "{{horizontalpodautoscaler}}",
+    "refId": "A",
+    "instant": true
+  }
+]
+    },
+
+    {
+      "type": "row",
+      "title": "HPA Utilization vs Target",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "HPA CPU Utilization vs Target (%)",
+      "description": "The ratio HPA uses to decide scaling. When current > target HPA scales up; when current << target it scales down.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 19 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": { "lineWidth": 2, "fillOpacity": 6 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } },
+              { "id": "displayName", "value": "HPA target %" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "calcs": ["mean","max","lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "kube_horizontalpodautoscaler_status_target_metric_value{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\", metric_name=\"cpu\"}",
+          "legendFormat": "current CPU% — {{horizontalpodautoscaler}}",
+          "refId": "A"
+        },
+        {
+          "expr": "kube_horizontalpodautoscaler_spec_target_metric{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\", metric_name=\"cpu\"}",
+          "legendFormat": "target CPU% — {{horizontalpodautoscaler}}",
+          "refId": "B"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "K6 Load Test Correlation",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 28 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "K6 VUs + HPA Replicas + P99 Latency",
+      "description": "Overlay K6 virtual users (load input), HPA replica count (scaling reaction), and P99 latency (user impact). Watch the staircase pattern: load rises → latency spikes → HPA fires → latency recovers.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 29 },
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 4 } },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "A" },
+            "properties": [
+              { "id": "displayName", "value": "K6 Active VUs" },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } },
+              { "id": "unit", "value": "short" }
+            ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "displayName", "value": "HPA Current Replicas" },
+              { "id": "custom.axisPlacement", "value": "left" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } },
+              { "id": "unit", "value": "short" }
+            ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "C" },
+            "properties": [
+              { "id": "displayName", "value": "P99 Latency (ms)" },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "unit", "value": "ms" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "calcs": ["max","lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "k6_vus",
+          "legendFormat": "K6 VUs",
+          "refId": "A"
+        },
+        {
+          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=~\"$namespace\", horizontalpodautoscaler=~\"$hpa\"}",
+          "legendFormat": "HPA replicas — {{horizontalpodautoscaler}}",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(response_latency_ms_bucket{namespace=~\"$namespace\"}[$__rate_interval])) by (le))",
+          "legendFormat": "P99 Latency",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "K6 HTTP Request Rate & Failure Rate",
+      "description": "K6-side request rate and failure rate. Compare failure rate with Linkerd error rate to detect discrepancies.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 39 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 6 } },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "unit", "value": "percentunit" },
+              { "id": "custom.axisPlacement", "value": "right" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "calcs": ["mean","max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "rate(k6_http_reqs_total[$__rate_interval])",
+          "legendFormat": "HTTP req/s",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(k6_http_req_failed_total[$__rate_interval]) / rate(k6_http_reqs_total[$__rate_interval])",
+          "legendFormat": "failure rate",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "K6 Response Time Percentiles",
+      "description": "End-to-end response times seen by K6 (includes network). Compare against Linkerd latency panels.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 39 },
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "custom": { "lineWidth": 2, "fillOpacity": 5 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean","max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "k6_http_req_duration{quantile=\"0.50\"}",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "k6_http_req_duration{quantile=\"0.95\"}",
+          "legendFormat": "p95",
+          "refId": "B"
+        },
+        {
+          "expr": "k6_http_req_duration{quantile=\"0.99\"}",
+          "legendFormat": "p99",
+          "refId": "C"
+        }
+      ]
+    }
+
+  ],
+  "refresh": "15s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["hpa", "k6", "kubernetes", "autoscaling"],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "label": "Datasource",
+        "hide": 0
+      },
+      {
+        "name": "namespace",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "definition": "label_values(kube_horizontalpodautoscaler_metadata_generation, namespace)",
+        "query": { "query": "label_values(kube_horizontalpodautoscaler_metadata_generation, namespace)", "refId": "StandardVariableQuery" },
+        "label": "Namespace",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "hpa",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "definition": "label_values(kube_horizontalpodautoscaler_metadata_generation{namespace=~\"$namespace\"}, horizontalpodautoscaler)",
+        "query": { "query": "label_values(kube_horizontalpodautoscaler_metadata_generation{namespace=~\"$namespace\"}, horizontalpodautoscaler)", "refId": "StandardVariableQuery" },
+        "label": "HPA",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "3 — HPA Testing",
+  "uid": "hpa-testing-v2",
+  "version": 1
+}

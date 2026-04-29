@@ -1,0 +1,443 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+
+    {
+      "type": "row",
+      "title": "Latency (P50 / P95 / P99)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "P50 Latency per Service",
+      "description": "Median request latency per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 },
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "custom": { "lineWidth": 2, "fillOpacity": 6 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "P95 Latency per Service",
+      "description": "95th percentile latency per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 },
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "custom": { "lineWidth": 2, "fillOpacity": 6 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "P99 Latency per Service",
+      "description": "99th percentile — worst-case latency per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2, "fillOpacity": 6 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 500 },
+              { "color": "red", "value": 1000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Requests Per Second (RPS)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Inbound RPS per Service",
+      "description": "Requests per second received by each sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbound RPS per Service",
+      "description": "Requests per second sent FROM each sock-shop microservice to downstream services.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{src_namespace=\"sock-shop\", src_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (src_deployment)",
+          "legendFormat": "{{src_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Success Rate",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Success Rate per Service (%)",
+      "description": "% of non-5xx responses per sock-shop microservice. The golden signal for health.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 19 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "lineWidth": 2, "fillOpacity": 6 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 95 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "min", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", classification=\"success\"}[$__rate_interval])) by (dst_deployment) / sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (dst_deployment) * 100",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Current Success Rate per Service",
+      "description": "Current 5-minute success rate per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 95 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", classification=\"success\"}[5m])) by (dst_deployment) / sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[5m])) by (dst_deployment) * 100",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "TCP Connections & Throughput",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Open TCP Connections per Service",
+      "description": "Active inbound TCP sessions per sock-shop microservice. Rising trend = saturation risk.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 28 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(tcp_open_connections{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "TCP Bytes Received per Service",
+      "description": "Inbound network throughput per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 28 },
+      "fieldConfig": {
+        "defaults": { "unit": "Bps", "custom": { "lineWidth": 2, "fillOpacity": 6 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(tcp_read_bytes_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "TCP Bytes Sent per Service",
+      "description": "Outbound network throughput per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 28 },
+      "fieldConfig": {
+        "defaults": { "unit": "Bps", "custom": { "lineWidth": 2, "fillOpacity": 6 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(tcp_write_bytes_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Retries & Timeouts",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Retry Rate per Service",
+      "description": "Rate of retried requests per sock-shop microservice. High retries = upstream instability.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", classification=\"retry\"}[$__rate_interval])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Timeout Rate per Service",
+      "description": "Rate of timed-out requests per sock-shop microservice. Timeouts can cascade into retry storms.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", classification=\"timeout\"}[$__rate_interval])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "mTLS Identity Coverage",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 45 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "mTLS Coverage per Service (%)",
+      "description": "% of traffic that is mTLS-secured per sock-shop microservice. Should be near 100%.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 46 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "lineWidth": 2, "fillOpacity": 8 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "calcs": ["mean", "min", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", tls=\"true\"}[$__rate_interval])) by (dst_deployment) / sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[$__rate_interval])) by (dst_deployment) * 100",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Current mTLS Coverage per Service",
+      "description": "Current mTLS coverage snapshot per sock-shop microservice.",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 46 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "green", "value": 99 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\", tls=\"true\"}[5m])) by (dst_deployment) / sum(rate(response_total{dst_namespace=\"sock-shop\", dst_deployment=~\"carts|front-end|catalogue|user|orders|shipping|payment|queue-master\"}[5m])) by (dst_deployment) * 100",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    }
+
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["linkerd", "sock-shop", "service-mesh"],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "label": "Datasource",
+        "hide": 0
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "1 — Linkerd / Sock Shop",
+  "uid": "linkerd-sockshop-final",
+  "version": 1
+}

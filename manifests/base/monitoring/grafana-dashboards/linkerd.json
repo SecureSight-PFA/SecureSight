@@ -1,0 +1,135 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+
+    {
+      "type": "row",
+      "title": "Request Rate (RPS)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests per second — all services",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(rate(request_total{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Latency (P50 / P95 / P99)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 }
+    },
+    {
+      "type": "timeseries",
+      "title": "P50 latency",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 10 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "P95 latency",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 10 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "P99 latency",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 10 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(response_latency_ms_bucket{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (le, dst_deployment))",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "TCP Connections & Throughput",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Open TCP connections",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+      "targets": [
+        {
+          "expr": "sum(tcp_open_connections{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "TCP bytes received",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 19 },
+      "targets": [
+        {
+          "expr": "sum(rate(tcp_read_bytes_total{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "TCP bytes sent",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+      "targets": [
+        {
+          "expr": "sum(rate(tcp_write_bytes_total{dst_namespace=\"sock-shop\", dst_deployment!=\"json-exporter\"}[1m])) by (dst_deployment)",
+          "legendFormat": "{{dst_deployment}}",
+          "refId": "A"
+        }
+      ]
+    }
+
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["sock-shop", "linkerd"],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "label": "Datasource"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "Sock Shop — Linkerd Metrics (Fixed)",
+  "version": 1
+}
