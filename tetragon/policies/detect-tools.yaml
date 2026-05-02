@@ -1,0 +1,29 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-suspicious-tools
+spec:
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Prefix"
+              values:
+                - "/usr/bin/curl"
+                - "/usr/bin/wget"
+                - "/usr/bin/apt"
+                - "/usr/bin/apt-get"
+                - "/usr/bin/yum"
+                - "/usr/bin/apk"
+                - "/bin/nc"
+                - "/usr/bin/netcat"
+                - "/usr/bin/nmap"
+                - "/usr/bin/python"
+                - "/usr/bin/python3"
+          matchActions:
+            - action: Post

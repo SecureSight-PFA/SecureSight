@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-deleted-binary-exec
+spec:
+  kprobes:
+    - call: "security_bprm_check"
+      syscall: false
+      args:
+        - index: 0
+          type: "linux_binprm"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Postfix"
+              values:
+                - " (deleted)"
+          matchActions:
+            - action: Post

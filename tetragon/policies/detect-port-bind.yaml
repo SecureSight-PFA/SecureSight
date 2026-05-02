@@ -1,0 +1,18 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-port-bind
+spec:
+  kprobes:
+    - call: "sys_bind"
+      syscall: true
+      args:
+        - index: 0
+          type: "int"
+        - index: 1
+          type: "sockaddr"
+        - index: 2
+          type: "int"
+      selectors:
+        - matchActions:
+            - action: Post

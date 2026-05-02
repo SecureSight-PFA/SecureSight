@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-dns-exfiltration
+spec:
+  kprobes:
+    - call: "udp_sendmsg"
+      syscall: false
+      args:
+        - index: 0
+          type: "sock"
+        - index: 2
+          type: "int"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "DPort"
+              values:
+                - "53"
+          matchActions:
+            - action: Post
