@@ -14,8 +14,8 @@ prometheus:
         value: monitoring-nodes
         effect: NoSchedule
 
-    retention: 10d
-    retentionSize: "5GB"
+    retention: 5d
+    retentionSize: "15GB"
 
     resources:
       requests:
@@ -32,7 +32,7 @@ prometheus:
           accessModes: [ "ReadWriteOnce" ]
           resources:
             requests:
-              storage: 5Gi
+              storage: 20Gi
 
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
