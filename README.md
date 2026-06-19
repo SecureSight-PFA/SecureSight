@@ -149,7 +149,7 @@ The entire AWS infrastructure is provisioned by Terraform. No resource is create
  
 > The diagram below shows the full system architecture. For clarity, only one Availability Zone is represented; the actual deployment spans two AZs (`us-east-2a` and `us-east-2b`) with worker nodes and subnets duplicated across both.
  
-![Project Architecture](architecture/project_architecture.png)
+![Project Architecture](architecture/project_architecture.svg)
  
 The AWS infrastructure diagram below shows the network layout in detail across both AZs.
  
