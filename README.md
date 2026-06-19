@@ -4,7 +4,7 @@
 
 **Security and Site Reliability Engineering of a Cloud-Native Microservices Application on AWS EKS**
 
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.33-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io)[![AWS EKS](https://img.shields.io/badge/AWS-EKS-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/eks/)[![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)](https://www.terraform.io)[![Linkerd](https://img.shields.io/badge/Linkerd-Service_Mesh-2BEDA7?logo=linkerd&logoColor=white)](https://linkerd.io)[![Tetragon](https://img.shields.io/badge/Tetragon-eBPF_Security-F8C517?logo=tetragon&logoColor=black)](https://tetragon.io)[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io)[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana&logoColor=white)](https://grafana.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.33-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io) [![AWS EKS](https://img.shields.io/badge/AWS-EKS-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/eks/) [![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)](https://www.terraform.io) [![Linkerd](https://img.shields.io/badge/Linkerd-Service_Mesh-2BEDA7?logo=linkerd&logoColor=white)](https://linkerd.io)  [![Tetragon](https://img.shields.io/badge/Tetragon-eBPF_Security-F8C517?logo=tetragon&logoColor=black)](https://tetragon.io) [![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io) [![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana&logoColor=white)](https://grafana.com)
 
 </div>
 
@@ -81,7 +81,7 @@ The project demonstrates that reliability engineering, observability, and runtim
  
 ```
 SecureSight/
-├── Architecture/
+├── architecture/
 │   ├── project_architecture.png      # Full system architecture diagram
 │   ├── Architecture.png              # Sock Shop inter-service communication
 │   └── aws_architecture.png  # AWS infrastructure diagram
@@ -149,11 +149,11 @@ The entire AWS infrastructure is provisioned by Terraform. No resource is create
  
 > The diagram below shows the full system architecture. For clarity, only one Availability Zone is represented; the actual deployment spans two AZs (`us-east-2a` and `us-east-2b`) with worker nodes and subnets duplicated across both.
  
-![Project Architecture](images/project_architecture.png)
+![Project Architecture](architecture/project_architecture.png)
  
 The AWS infrastructure diagram below shows the network layout in detail across both AZs.
  
-![AWS Infrastructure Architecture](architecture/aws_rchitecture.png)
+![AWS Infrastructure Architecture](architecture/aws_architecture.png)
  
 **Network architecture:**
 - VPC `10.0.0.0/16` across `us-east-2a` and `us-east-2b`
@@ -224,7 +224,7 @@ The application is [Sock Shop](https://github.com/ocp-power-demos/sock-shop-demo
 | `user-db` | MongoDB | 1 Gi EBS |
 | `rabbitmq` | RabbitMQ | 1 Gi EBS |
  
-![Application Architecture](images/Architecture.png)
+![Application Architecture](architecture/Architecture.png)
  
 **Replica redundancy:** Every Deployment runs `replicas: 2` at minimum. Single-replica deployments create single points of failure during pod crashes, node failures, and rolling updates.
  
